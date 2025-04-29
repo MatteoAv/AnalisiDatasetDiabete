@@ -14,9 +14,24 @@ pd.set_option('display.max_colwidth', None)
 # pd.set_option('display.float_format', '{:.2f}'.format)
 
 # df = pd.read_csv("Excel/Biochemical_parameters.csv")
-# df = pd.read_csv("Excel/Diagnostics.csv")
+df = pd.read_csv("Excel/Diagnostics.csv")
 # df = pd.read_csv("Excel/Glucose_measurements.csv")
 # df = pd.read_csv("Excel/Patient_info.csv")
+
+# Raggruppa per la colonna 'Description' e conta il numero di pazienti in ogni gruppo
+grouped = df.groupby('Description').size()
+
+# Ordina per numero di pazienti in ordine decrescente e prendi le prime 20 descrizioni
+top_20_descriptions = grouped.sort_values(ascending=False).head(10)
+
+# Filtra il dataframe originale per includere solo i record con le descrizioni delle prime 20
+filtered_df = df[df['Description'].isin(top_20_descriptions.index)]
+
+# Stampa le prime 20 descrizioni con il numero di pazienti
+print(top_20_descriptions)
+print()
+
+
 
 # LEGENDA STATISTICHE
 # mean = MEDIA
