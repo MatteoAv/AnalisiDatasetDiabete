@@ -42,23 +42,23 @@ pd.set_option('display.max_colwidth', None)
 # print(df.describe()) #viene eseguito solo sulle colonne numeriche es:int64
 
 
-diagnostics_df = pd.read_csv("Excel/Diagnostics.csv")
-biochemical_df = pd.read_csv("Excel/Biochemical_parameters.csv")
-# pivot dei parametri
-bio_wide = biochemical_df.pivot_table(
-    index="Patient_ID",
-    columns="Name",
-    values="Value",
-    aggfunc="mean"
-).reset_index()
-
-# merge wide
-merged_wide = pd.merge(
-    diagnostics_df,
-    bio_wide,
-    on="Patient_ID",
-    how="left"
-)
+# diagnostics_df = pd.read_csv("Excel/Diagnostics.csv")
+# biochemical_df = pd.read_csv("Excel/Biochemical_parameters.csv")
+# # pivot dei parametri
+# bio_wide = biochemical_df.pivot_table(
+#     index="Patient_ID",
+#     columns="Name",
+#     values="Value",
+#     aggfunc="mean"
+# ).reset_index()
+#
+# # merge wide
+# merged_wide = pd.merge(
+#     diagnostics_df,
+#     bio_wide,
+#     on="Patient_ID",
+#     how="left"
+# )
 
 # print()
 # print('numero di righe e colonne')
@@ -72,10 +72,15 @@ merged_wide = pd.merge(
 
 
 # filtri solo le righe con Description == 'Other and unspecified hyperlipidemia'
-subset = merged_wide[ merged_wide['Description'] == 'Other and unspecified hyperlipidemia' ]
+# subset = merged_wide[ merged_wide['Description'] == 'Other and unspecified hyperlipidemia' ]
+#
+# nan_mask = subset.isna()
+# nan_count = nan_mask.sum()
+#
+# print(nan_count)
 
 # poi le stampi tutte insieme
-print(subset)
+# print(subset)
 
 # for index, row in merged_wide.iterrows():
 #     print(row)
