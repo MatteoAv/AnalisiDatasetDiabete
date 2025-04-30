@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import LabelEncoder
+from datetime import datetime
 
 
 #FORMATTAZIONE DELLA TABELLA MOSTRATA DA TERMINALE
@@ -40,9 +41,9 @@ pd.set_option('display.max_colwidth', None)
 
 
 #CREAZIONE GRAFICO SULLE PRIME 22 DIAGNOSI CON PIU PAZIENTI AFFETTI
-#DECOMMENTARE Excel/Diagnostics.csv PER ESEGUIRE QUESTO PEZZO DI CODICE
 ############################################################################################
 # # Raggruppa per la colonna 'Description' e conta il numero di pazienti in ogni gruppo
+# df = pd.read_csv("Excel/Diagnostics.csv")
 # grouped = df.groupby('Description').size()
 #
 # # Ordina i dati in ordine decrescente
@@ -65,8 +66,6 @@ pd.set_option('display.max_colwidth', None)
 #
 # # impostale sull'asse x, con rotazione
 # ax.set_xticklabels(wrapped, rotation=45, ha='right')
-#
-# ax.set_title('Numero di pazienti per diagnosi', fontsize=20)
 # ax.set_ylabel('Numero di pazienti', fontsize=16)
 # ax.set_xlabel('')  # niente label orizzontale
 #
@@ -97,46 +96,119 @@ pd.set_option('display.max_colwidth', None)
 #MERGE DELLE TABELLE Diagnostics.csv E Biochemical_parameters.csv E STAMPA DELLE STATISTICHE E
 #DEI PAZIENTI CHE HANNO UNO SPECIFICA COMPLICAZIONE (Other and unspecified hyperlipidemia)
 ############################################################################################
-diagnostics_df = pd.read_csv("Excel/Diagnostics.csv")
-biochemical_df = pd.read_csv("Excel/Biochemical_parameters.csv")
-# pivot dei parametri
-bio_wide = biochemical_df.pivot_table(
-    index="Patient_ID",
-    columns="Name",
-    values="Value",
-    aggfunc="mean"
-).reset_index()
+# diagnostics_df = pd.read_csv("Excel/Diagnostics.csv")
+# biochemical_df = pd.read_csv("Excel/Biochemical_parameters.csv")
+# # pivot dei parametri
+# bio_wide = biochemical_df.pivot_table(
+#     index="Patient_ID",
+#     columns="Name",
+#     values="Value",
+#     aggfunc="mean"
+# ).reset_index()
+#
+# # merge wide
+# merged_wide = pd.merge(
+#     diagnostics_df,
+#     bio_wide,
+#     on="Patient_ID",
+#     how="left"
+# )
+#
+# #PRINT STATISTICHE
+# # print()
+# # print('numero di righe e colonne')
+# # print(merged_wide.shape)
+# # print()
+# # print('tipi e missing')
+# # print(merged_wide.info())
+# # print()
+# # print('statistiche numeriche di base')
+# # print(merged_wide.describe()) #viene eseguito solo sulle colonne numeriche es:int64
+# # print()
+#
+#
+# # filtri solo le righe con Description == 'Other and unspecified hyperlipidemia'
+# subset = merged_wide[ merged_wide['Description'] == 'Other and unspecified hyperlipidemia' ]
+#
+#
+# #PRINT DI QUANTI VALORI NULLI HA OGNI COLONNA DELLA TABELLA
+# nan_mask = subset.isna()
+# nan_count = nan_mask.sum()
+# print(nan_count)
+#
+# #PRINT LISTA PAZIENTI CON QUESTA COMPLICAZIONE (Other and unspecified hyperlipidemia)
+# print(subset)
+############################################################################################
 
-# merge wide
-merged_wide = pd.merge(
+
+#STAMPA DI SESSO E ETA DEI PAZIENTI AFFETTI DA UNA CERTA COMPLICAZIONE
+############################################################################################
+diagnostics_df = pd.read_csv("Excel/Diagnostics.csv")
+patient_df = pd.read_csv("Excel/Patient_info.csv")
+
+#Merge dei dataset su Patient_ID
+merged = pd.merge(
     diagnostics_df,
-    bio_wide,
+    patient_df,
     on="Patient_ID",
     how="left"
 )
 
-#PRINT STATISTICHE
-# print()
-# print('numero di righe e colonne')
-# print(merged_wide.shape)
-# print()
-# print('tipi e missing')
-# print(merged_wide.info())
-# print()
-# print('statistiche numeriche di base')
-# print(merged_wide.describe()) #viene eseguito solo sulle colonne numeriche es:int64
-# print()
+# STAMPA DEI CODICI CHE HANNO COME DESCRIZIONE DELLA PATOLOGIA "Unspecified acquired hypothyroidism", "Unspecified essential hypertension"
+# df_hp = merged[merged["Description"] == "Other and unspecified hyperlipidemia"].copy()
+#
+# print(df_hp["Code"].tolist())
+# print("Codici unici:", df_hp["Code"].unique())
+# print(df_hp[["Patient_ID","Code"]])
 
 
-# filtri solo le righe con Description == 'Other and unspecified hyperlipidemia'
-subset = merged_wide[ merged_wide['Description'] == 'Other and unspecified hyperlipidemia' ]
+df_hp = merged[merged["Code"] == "272.4"].copy()
 
+#calcola l'età (anno corrente 2025)
+df_hp["Età"] = 2025 - df_hp["Birth_year"]
 
-#PRINT DI QUANTI VALORI NULLI HA OGNI COLONNA DELLA TABELLA
-nan_mask = subset.isna()
-nan_count = nan_mask.sum()
-print(nan_count)
+#Grafico distribuzione del sesso
 
-#PRINT LISTA PAZIENTI CON QUESTA COMPLICAZIONE (Other and unspecified hyperlipidemia)
-print(subset)
+light_blue = "#ADD8E6"   # “lightblue”
+light_red  = "#FFB6C1"   # “lightpink”
+
+# Conta e ordina (per sicurezza) i due valori
+counts = df_hp["Sex"].value_counts()
+
+# Definisci un dizionario di colori
+color_map = {"M": light_blue, "F": light_red}
+colors = [color_map[label] for label in counts.index]
+
+# Pie‐chart con colori personalizzati
+plt.figure(figsize=(6,6))
+counts.plot.pie(
+    colors=colors,
+    autopct="%1.1f%%",
+    startangle=90,
+    legend=False
+)
+plt.ylabel("")
+plt.title("")
+plt.axis("equal")
+plt.tight_layout()
+plt.show()
+
+#Grafico distribuzione dell'età
+plt.figure(figsize=(8,5))
+sns.kdeplot(
+    data=df_hp,
+    x="Età",
+    fill=True,        # area sotto la curva colorata
+    alpha=0.4,        # trasparenza
+    linewidth=2
+)
+plt.title("")
+plt.xlabel("Età")
+plt.ylabel("Densità stimata")
+plt.tight_layout()
+plt.show()
 ############################################################################################
+
+
+
+
