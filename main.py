@@ -207,6 +207,20 @@ plt.xlabel("Età")
 plt.ylabel("Densità stimata")
 plt.tight_layout()
 plt.show()
+
+#Istogramma con numero di pazienti per etá
+plt.figure(figsize=(8,5))
+sns.histplot(
+    data=df_hp,
+    x="Età",
+    bins=10,          # numero di barre (regola a piacere)
+    stat="count",     # indica di mostrare conteggi anziché densità
+    discrete=False    # False di default: barre continue
+)
+plt.xlabel("Età")
+plt.ylabel("Numero di pazienti")
+plt.tight_layout()
+plt.show()
 ############################################################################################
 
 
