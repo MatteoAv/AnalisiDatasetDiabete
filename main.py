@@ -226,50 +226,60 @@ pd.set_option('display.max_colwidth', None)
 
 #NUOVO GRAFICO
 ############################################################################################
+# 1) Caricamento
 diagnostics_df = pd.read_csv("Excel/Diagnostics.csv")
-patient_df = pd.read_csv("Excel/Patient_info.csv")
+patient_df     = pd.read_csv("Excel/Patient_info.csv")
 
-#Merge dei dataset su Patient_ID
+# 2) Costruisci il flag "has complication" ONE‑ROW‑PER‑PATIENT
+diagnostics_df["Has_complication"] = diagnostics_df["Description"].notna()
+complication_flag = (
+    diagnostics_df
+    .groupby("Patient_ID")["Has_complication"]
+    .any()
+    .reset_index()
+)
+
+# 3) Merge: UNA riga per paziente
 merged = pd.merge(
     patient_df,
-    diagnostics_df,
+    complication_flag,
     on="Patient_ID",
     how="left"
 )
+# i pazienti senza diagnosi avranno NaN → False
+merged["Has_complication"] = (
+    merged["Has_complication"]
+      .astype("boolean")      # diventa BooleanDtype (nullable)
+      .fillna(False)          # i NaN diventano False, senza warning
+)
+merged["Complicanza"] = merged["Has_complication"].map({True:"Sì", False:"No"})
 
-# Conta il numero di righe dove la colonna 'Description' è NaN
-# Sono 225
-# num_nan_descriptions = merged['Description'].isna().sum()
-# print(f"Numero di record con Description = Null: {num_nan_descriptions}")
+# verifica
+assert len(merged) == 736, f"Righe in merged = {len(merged)} (attesi 736)"
 
-
-
-bins = [0, 20, 30, 40, 50, 60, 70, 80 ,90, 120]
-labels = ['0-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91+']
+# 4) Calcola età e fasce
 merged["Eta"] = 2025 - merged["Birth_year"]
-
-merged['Complicanza'] = merged['Description'].notna().map({True:'Sì', False:'No'})
+bins   = [0,20,30,40,50,60,70,80,90,120]
+labels = ['0-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91+']
 merged["Eta_bin"] = pd.cut(merged["Eta"], bins=bins, labels=labels, right=True)
+
+# 5) Tabella di contingenza
 table = (
     merged
-    .groupby(['Eta_bin', 'Sex', 'Complicanza'], observed=True)
+    .groupby(["Eta_bin","Sex","Complicanza"], observed=True)
     .size()
-    .unstack(fill_value=0)          # colonne = Description (es. 'No','Sì')
+    .unstack(fill_value=0)
 )
 
-# estraiamo e poi reindicizziamo M e F su TUTTE le fasce
-table_M = table.xs('M', level='Sex').reindex(labels, fill_value=0)
-table_F = table.xs('F', level='Sex').reindex(labels, fill_value=0)
+# 6) Estrai M e F e reindicizza tutte le fasce
+table_M = table.xs("M", level="Sex").reindex(labels, fill_value=0)
+table_F = table.xs("F", level="Sex").reindex(labels, fill_value=0)
 
-# assegniamo x su tutte le fasce
-x = np.arange(len(labels))
-width = 0.35
-
-# estraiamo i conteggi (compilando a zero dove mancano)
-no_M  = table_M['No']
-yes_M = table_M['Sì']
-no_F  = table_F['No']
-yes_F = table_F['Sì']
+# 7) Prepara i vettori per il plot
+x      = np.arange(len(labels))
+width  = 0.35
+no_M   = table_M["No"];   yes_M = table_M["Sì"]
+no_F   = table_F["No"];   yes_F = table_F["Sì"]
 
 colors = {
     'M_no':  '#ADD8E6',  # lightblue
@@ -278,43 +288,27 @@ colors = {
     'F_yes': '#FF69B4',  # hotpink
 }
 
+# 8) Disegna il bar‑chart impilato
 fig, ax = plt.subplots(figsize=(10,6))
 
-# Maschi
-ax.bar(
-    x - width/2,
-    no_M,
-    width,
-    label='Maschi senza complicanze',
-    color=colors['M_no']
-)
-ax.bar(
-    x - width/2,
-    yes_M,
-    width,
-    bottom=no_M,
-    label='Maschi con complicanze',
-    color=colors['M_yes']
-)
+bars_M_no  = ax.bar(x - width/2, no_M,  width, label='Maschi senza complicanze', color=colors['M_no'])
+bars_M_yes = ax.bar(x - width/2, yes_M, width, bottom=no_M, label='Maschi con complicanze',    color=colors['M_yes'])
+bars_F_no  = ax.bar(x + width/2, no_F,  width, label='Femmine senza complicanze', color=colors['F_no'])
+bars_F_yes = ax.bar(x + width/2, yes_F, width, bottom=no_F, label='Femmine con complicanze',    color=colors['F_yes'])
 
-# Femmine
-ax.bar(
-    x + width/2,
-    no_F,
-    width,
-    label='Femmine senza complicanze',
-    color=colors['F_no']
-)
-ax.bar(
-    x + width/2,
-    yes_F,
-    width,
-    bottom=no_F,
-    label='Femmine con complicanze',
-    color=colors['F_yes']
-)
+# 9) Annotazioni dei valori dentro le barre
+def annotate_bars(bars):
+    for bar in bars:
+        h = bar.get_height()
+        if h>0:
+            ax.annotate(f'{int(h)}',
+                        xy=(bar.get_x()+bar.get_width()/2, bar.get_y()+h/2),
+                        ha='center', va='center', fontsize=8)
 
+for grp in (bars_M_no, bars_M_yes, bars_F_no, bars_F_yes):
+    annotate_bars(grp)
 
+# 10) Etichette e stile
 ax.set_xticks(x)
 ax.set_xticklabels(labels, rotation=45)
 ax.set_xlabel("Fascia d'età")
@@ -323,6 +317,7 @@ ax.legend(title="Legenda")
 
 plt.tight_layout()
 plt.show()
+
 
 ############################################################################################
 
