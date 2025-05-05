@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
 from sklearn.preprocessing import LabelEncoder
 from datetime import datetime
@@ -143,86 +144,186 @@ pd.set_option('display.max_colwidth', None)
 
 #STAMPA DI SESSO E ETA DEI PAZIENTI AFFETTI DA UNA CERTA COMPLICAZIONE
 ############################################################################################
+# diagnostics_df = pd.read_csv("Excel/Diagnostics.csv")
+# patient_df = pd.read_csv("Excel/Patient_info.csv")
+#
+# #Merge dei dataset su Patient_ID
+# merged = pd.merge(
+#     diagnostics_df,
+#     patient_df,
+#     on="Patient_ID",
+#     how="left"
+# )
+#
+# # STAMPA DEI CODICI CHE HANNO COME DESCRIZIONE DELLA PATOLOGIA "Unspecified acquired hypothyroidism", "Unspecified essential hypertension"
+# # df_hp = merged[merged["Description"] == "Other and unspecified hyperlipidemia"].copy()
+# #
+# # print(df_hp["Code"].tolist())
+# # print("Codici unici:", df_hp["Code"].unique())
+# # print(df_hp[["Patient_ID","Code"]])
+#
+#
+# df_hp = merged[merged["Code"] == "272.4"].copy()
+#
+# #calcola l'età (anno corrente 2025)
+# df_hp["Età"] = 2025 - df_hp["Birth_year"]
+#
+# #Grafico distribuzione del sesso
+#
+# light_blue = "#ADD8E6"   # “lightblue”
+# light_red  = "#FFB6C1"   # “lightpink”
+#
+# # Conta e ordina (per sicurezza) i due valori
+# counts = df_hp["Sex"].value_counts()
+#
+# # Definisci un dizionario di colori
+# color_map = {"M": light_blue, "F": light_red}
+# colors = [color_map[label] for label in counts.index]
+#
+# # Pie‐chart con colori personalizzati
+# plt.figure(figsize=(6,6))
+# counts.plot.pie(
+#     colors=colors,
+#     autopct="%1.1f%%",
+#     startangle=90,
+#     legend=False
+# )
+# plt.ylabel("")
+# plt.title("")
+# plt.axis("equal")
+# plt.tight_layout()
+# plt.show()
+#
+# #Grafico distribuzione dell'età
+# plt.figure(figsize=(8,5))
+# sns.kdeplot(
+#     data=df_hp,
+#     x="Età",
+#     fill=True,        # area sotto la curva colorata
+#     alpha=0.4,        # trasparenza
+#     linewidth=2
+# )
+# plt.title("")
+# plt.xlabel("Età")
+# plt.ylabel("Densità stimata")
+# plt.tight_layout()
+# plt.show()
+#
+# #Istogramma con numero di pazienti per etá
+# plt.figure(figsize=(8,5))
+# sns.histplot(
+#     data=df_hp,
+#     x="Età",
+#     bins=10,          # numero di barre (regola a piacere)
+#     stat="count",     # indica di mostrare conteggi anziché densità
+#     discrete=False    # False di default: barre continue
+# )
+# plt.xlabel("Età")
+# plt.ylabel("Numero di pazienti")
+# plt.tight_layout()
+# plt.show()
+############################################################################################
+
+#NUOVO GRAFICO
+############################################################################################
 diagnostics_df = pd.read_csv("Excel/Diagnostics.csv")
 patient_df = pd.read_csv("Excel/Patient_info.csv")
 
 #Merge dei dataset su Patient_ID
 merged = pd.merge(
-    diagnostics_df,
     patient_df,
+    diagnostics_df,
     on="Patient_ID",
     how="left"
 )
 
-# STAMPA DEI CODICI CHE HANNO COME DESCRIZIONE DELLA PATOLOGIA "Unspecified acquired hypothyroidism", "Unspecified essential hypertension"
-# df_hp = merged[merged["Description"] == "Other and unspecified hyperlipidemia"].copy()
-#
-# print(df_hp["Code"].tolist())
-# print("Codici unici:", df_hp["Code"].unique())
-# print(df_hp[["Patient_ID","Code"]])
+# Conta il numero di righe dove la colonna 'Description' è NaN
+# Sono 225
+# num_nan_descriptions = merged['Description'].isna().sum()
+# print(f"Numero di record con Description = Null: {num_nan_descriptions}")
 
 
-df_hp = merged[merged["Code"] == "272.4"].copy()
 
-#calcola l'età (anno corrente 2025)
-df_hp["Età"] = 2025 - df_hp["Birth_year"]
+bins = [0, 20, 30, 40, 50, 60, 70, 80 ,90, 120]
+labels = ['0-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91+']
+merged["Eta"] = 2025 - merged["Birth_year"]
 
-#Grafico distribuzione del sesso
-
-light_blue = "#ADD8E6"   # “lightblue”
-light_red  = "#FFB6C1"   # “lightpink”
-
-# Conta e ordina (per sicurezza) i due valori
-counts = df_hp["Sex"].value_counts()
-
-# Definisci un dizionario di colori
-color_map = {"M": light_blue, "F": light_red}
-colors = [color_map[label] for label in counts.index]
-
-# Pie‐chart con colori personalizzati
-plt.figure(figsize=(6,6))
-counts.plot.pie(
-    colors=colors,
-    autopct="%1.1f%%",
-    startangle=90,
-    legend=False
+merged['Complicanza'] = merged['Description'].notna().map({True:'Sì', False:'No'})
+merged["Eta_bin"] = pd.cut(merged["Eta"], bins=bins, labels=labels, right=True)
+table = (
+    merged
+    .groupby(['Eta_bin', 'Sex', 'Complicanza'], observed=True)
+    .size()
+    .unstack(fill_value=0)          # colonne = Description (es. 'No','Sì')
 )
-plt.ylabel("")
-plt.title("")
-plt.axis("equal")
+
+# estraiamo e poi reindicizziamo M e F su TUTTE le fasce
+table_M = table.xs('M', level='Sex').reindex(labels, fill_value=0)
+table_F = table.xs('F', level='Sex').reindex(labels, fill_value=0)
+
+# assegniamo x su tutte le fasce
+x = np.arange(len(labels))
+width = 0.35
+
+# estraiamo i conteggi (compilando a zero dove mancano)
+no_M  = table_M['No']
+yes_M = table_M['Sì']
+no_F  = table_F['No']
+yes_F = table_F['Sì']
+
+colors = {
+    'M_no':  '#ADD8E6',  # lightblue
+    'M_yes': '#4682B4',  # steelblue
+    'F_no':  '#FFB6C1',  # lightpink
+    'F_yes': '#FF69B4',  # hotpink
+}
+
+fig, ax = plt.subplots(figsize=(10,6))
+
+# Maschi
+ax.bar(
+    x - width/2,
+    no_M,
+    width,
+    label='Maschi senza complicanze',
+    color=colors['M_no']
+)
+ax.bar(
+    x - width/2,
+    yes_M,
+    width,
+    bottom=no_M,
+    label='Maschi con complicanze',
+    color=colors['M_yes']
+)
+
+# Femmine
+ax.bar(
+    x + width/2,
+    no_F,
+    width,
+    label='Femmine senza complicanze',
+    color=colors['F_no']
+)
+ax.bar(
+    x + width/2,
+    yes_F,
+    width,
+    bottom=no_F,
+    label='Femmine con complicanze',
+    color=colors['F_yes']
+)
+
+
+ax.set_xticks(x)
+ax.set_xticklabels(labels, rotation=45)
+ax.set_xlabel("Fascia d'età")
+ax.set_ylabel("Numero pazienti")
+ax.legend(title="Legenda")
+
 plt.tight_layout()
 plt.show()
 
-#Grafico distribuzione dell'età
-plt.figure(figsize=(8,5))
-sns.kdeplot(
-    data=df_hp,
-    x="Età",
-    fill=True,        # area sotto la curva colorata
-    alpha=0.4,        # trasparenza
-    linewidth=2
-)
-plt.title("")
-plt.xlabel("Età")
-plt.ylabel("Densità stimata")
-plt.tight_layout()
-plt.show()
-
-#Istogramma con numero di pazienti per etá
-plt.figure(figsize=(8,5))
-sns.histplot(
-    data=df_hp,
-    x="Età",
-    bins=10,          # numero di barre (regola a piacere)
-    stat="count",     # indica di mostrare conteggi anziché densità
-    discrete=False    # False di default: barre continue
-)
-plt.xlabel("Età")
-plt.ylabel("Numero di pazienti")
-plt.tight_layout()
-plt.show()
 ############################################################################################
-
-
 
 
