@@ -335,7 +335,7 @@ df = df[(df['Measurement'].notna()) & (df['Measurement'] >= 40) &  (df['Measurem
 #
 # pazienti = df.groupby('Patient_ID') # Dividiamo il dataset per paziente, ogni gruppo contiene le misurazioni di un singolo paziente
 # tir_by_paziente = pazienti.apply(calculate_tir).reset_index(name='%TIR') # Calcoliamo il TIR di ogni paziente e creiamo un nuovo dataset con 2 colonne: Ptient_ID e %TIR
-# tir_by_paziente = tir_by_paziente.sort_values(by='%TIR', ascending=False)
+# # tir_by_paziente = tir_by_paziente.sort_values(by='%TIR', ascending=False)
 # print(tir_by_paziente)
 #
 # # Grafico per la percentuale di ogni paziente
@@ -343,6 +343,7 @@ df = df[(df['Measurement'].notna()) & (df['Measurement'] >= 40) &  (df['Measurem
 # plt.bar(tir_by_paziente['Patient_ID'], tir_by_paziente['%TIR'], color='skyblue')
 # plt.xticks([])
 # plt.ylabel('% Time In Range (70–180 mg/dL)')
+# plt.xlabel('Pazienti')
 # plt.title('')
 # plt.tight_layout()
 # plt.show()
@@ -422,6 +423,7 @@ df = df[(df['Measurement'].notna()) & (df['Measurement'] >= 40) &  (df['Measurem
 # plt.bar(tar_by_paziente['Patient_ID'], tar_by_paziente['%TAR'], color='skyblue')
 # plt.xticks([])
 # plt.ylabel('% Time Above Range (> 180 mg/dL)')
+# plt.xlabel('Pazienti')
 # plt.title('')
 # plt.tight_layout()
 # plt.show()
@@ -494,93 +496,467 @@ df = df[(df['Measurement'].notna()) & (df['Measurement'] >= 40) &  (df['Measurem
 # print("Moda:", moda.tolist())
 ############################################################################################
 
+
+# ANALISI TAR LV1
+############################################################################################
+# # Funzione per calcolare il TARLV1 di un paziente
+# def calculate_tar(misurazioni): # Prende in ingresso l'insieme di misurazioni di un singolo paziente
+#     totale = len(misurazioni)   # Calcola il numero totale di misurazioni del paziente
+#     righe_valide = misurazioni[(misurazioni['Measurement'] >= 181) & (misurazioni['Measurement'] <= 249)] # Seleziona solo le righe che nel campo Measurement hanno un valore compreso tra 181 e 249 mg/dL
+#     tar = len(righe_valide)/totale * 100 # Calcola il %TARLV1 facendo Misurazioni Valide/Misurazioni Totali
+#     return tar
+#
+# pazienti = df.groupby('Patient_ID') # Dividiamo il dataset per paziente, ogni gruppo contiene le misurazioni di un singolo paziente
+# tar_by_paziente = pazienti.apply(calculate_tar).reset_index(name='%TARLV1') # Calcoliamo il TARLV1 di ogni paziente e creiamo un nuovo dataset con 2 colonne: Ptient_ID e %TARLV1
+# # tar_by_paziente = tar_by_paziente.sort_values(by='%TARLV1', ascending=False)
+# print(tar_by_paziente)
+#
+# # Grafico per la percentuale di ogni paziente
+# plt.figure(figsize=(14, 6))
+# plt.bar(tar_by_paziente['Patient_ID'], tar_by_paziente['%TARLV1'], color='#ffa07a')
+# plt.xticks([])
+# plt.ylabel('% Time Above Range LV1 (181 - 249 mg/dL)')
+# plt.xlabel('Pazienti')
+# plt.title('')
+# plt.tight_layout()
+# plt.show()
+#
+# # Statistiche descrittive di %TARLV1
+# print(tar_by_paziente['%TARLV1'].describe())
+#
+# # Raggruppiamo i valori di %TARLV1 in intervalli di 5% (es. 0-5%, 5-10%, ..., 95-100%)
+# tar_intervals = pd.cut(tar_by_paziente['%TARLV1'], bins=range(0, 110, 10), right=False)  #Notazione [0,10) 0 é incluso ma 10 no
+#
+# # Conteggio dei pazienti per ciascun intervallo
+# pazienti_per_interval = tar_intervals.value_counts().sort_index()
+#
+# print(pazienti_per_interval)
+#
+# # Istogramma del numero di pazienti per ciascun intervallo di %TARLV1
+# plt.figure(figsize=(10, 6))
+# bars = pazienti_per_interval.plot(kind='bar', color='#ffa07a')
+#
+# for bar in bars.patches:
+#     height = bar.get_height()  # Otteniamo l'altezza della barra (numero di pazienti)
+#     bar.set_edgecolor('black')  # Impostiamo il bordo della barra
+#     bar.set_linewidth(1)  # Impostiamo lo spessore del bordo
+#     plt.text(bar.get_x() + bar.get_width() / 2, height + 0.5, int(height),
+#              ha='center', va='bottom', fontsize=10, color='black')
+#
+# plt.title('')
+# plt.xlabel('%TARLV1')
+# plt.ylabel('Numero di Pazienti')
+# plt.xticks(rotation=45)
+# plt.tight_layout()
+# plt.show()
+#
+#
+# tar_values = tar_by_paziente['%TARLV1']
+#
+# # Statistiche descrittive
+# media = tar_values.mean()
+# mediana = tar_values.median()
+# asimmetria = skew(tar_values) #skewness
+# curtosi = kurtosis(tar_values)
+#
+# tar_arrotondato = tar_values.round()
+# moda = tar_arrotondato.mode()
+#
+# # Outlier con metodo IQR (Interquartile Range)
+# # calcola Q1, Q3 e IQR
+# q1 = tar_values.quantile(0.25)
+# q3 = tar_values.quantile(0.75)
+# iqr = q3 - q1
+#
+# # soglie per outlier
+# lower_thr = q1 - 1.5 * iqr
+# upper_thr = q3 + 1.5 * iqr
+#
+# print(f"Q1 = {q1:.2f}%, Q3 = {q3:.2f}%, IQR = {iqr:.2f}%")
+# print(f"Soglia inferiore = {lower_thr:.2f}%, soglia superiore = {upper_thr:.2f}%")
+# outliers = tar_values[(tar_values < lower_thr) | (tar_values > upper_thr)]
+# print("Valori TARLV1 considerati outlier:")
+# print(outliers.sort_values().to_list())
+#
+#
+#
+# # Output
+# print(f"Media: {media:.2f}")
+# print(f"Mediana: {mediana:.2f}")
+# print(f"Asimmetria (skewness): {asimmetria:.2f}")
+# print(f"Curtosi (kurtosis): {curtosi:.2f}")
+# print(f"Numero di outlier: {len(outliers)}")
+# print("Moda:", moda.tolist())
+############################################################################################
+
+
+# ANALISI TAR LV2
+############################################################################################
+# # Funzione per calcolare il TARLV2 di un paziente
+# def calculate_tar(misurazioni): # Prende in ingresso l'insieme di misurazioni di un singolo paziente
+#     totale = len(misurazioni)   # Calcola il numero totale di misurazioni del paziente
+#     righe_valide = misurazioni[(misurazioni['Measurement'] >= 250)] # Seleziona solo le righe che nel campo Measurement hanno un valore maggiore di 250 mg/dL
+#     tar = len(righe_valide)/totale * 100 # Calcola il %TARLV2 facendo Misurazioni Valide/Misurazioni Totali
+#     return tar
+#
+# pazienti = df.groupby('Patient_ID') # Dividiamo il dataset per paziente, ogni gruppo contiene le misurazioni di un singolo paziente
+# tar_by_paziente = pazienti.apply(calculate_tar).reset_index(name='%TARLV2') # Calcoliamo il TARLV2 di ogni paziente e creiamo un nuovo dataset con 2 colonne: Ptient_ID e %TARLV2
+# # tar_by_paziente = tar_by_paziente.sort_values(by='%TARLV2', ascending=False)
+# print(tar_by_paziente)
+#
+# # Grafico per la percentuale di ogni paziente
+# plt.figure(figsize=(14, 6))
+# plt.bar(tar_by_paziente['Patient_ID'], tar_by_paziente['%TARLV2'], color='#e64100')
+# plt.xticks([])
+# plt.ylabel('% Time Above Range LV2 (> 249 mg/dL)')
+# plt.xlabel('Pazienti')
+# plt.title('')
+# plt.tight_layout()
+# plt.show()
+#
+# # Statistiche descrittive di %TARLV2
+# print(tar_by_paziente['%TARLV2'].describe())
+#
+# # Raggruppiamo i valori di %TARLV2 in intervalli di 5% (es. 0-5%, 5-10%, ..., 95-100%)
+# tar_intervals = pd.cut(tar_by_paziente['%TARLV2'], bins=range(0, 110, 10), right=False)  #Notazione [0,10) 0 é incluso ma 10 no
+#
+# # Conteggio dei pazienti per ciascun intervallo
+# pazienti_per_interval = tar_intervals.value_counts().sort_index()
+#
+# print(pazienti_per_interval)
+#
+# # Istogramma del numero di pazienti per ciascun intervallo di %TARLV2
+# plt.figure(figsize=(10, 6))
+# bars = pazienti_per_interval.plot(kind='bar', color='#e64100', edgecolor='black')
+#
+# for bar in bars.patches:
+#     height = bar.get_height()  # Otteniamo l'altezza della barra (numero di pazienti)
+#     bar.set_edgecolor('black')  # Impostiamo il bordo della barra
+#     bar.set_linewidth(1)  # Impostiamo lo spessore del bordo
+#     plt.text(bar.get_x() + bar.get_width() / 2, height + 0.5, int(height),
+#              ha='center', va='bottom', fontsize=10, color='black')
+#
+# plt.title('')
+# plt.xlabel('%TARLV2')
+# plt.ylabel('Numero di Pazienti')
+# plt.xticks(rotation=45)
+# plt.tight_layout()
+# plt.show()
+#
+#
+# tar_values = tar_by_paziente['%TARLV2']
+#
+# # Statistiche descrittive
+# media = tar_values.mean()
+# mediana = tar_values.median()
+# asimmetria = skew(tar_values) #skewness
+# curtosi = kurtosis(tar_values)
+#
+# tar_arrotondato = tar_values.round()
+# moda = tar_arrotondato.mode()
+#
+# # Outlier con metodo IQR (Interquartile Range)
+# # calcola Q1, Q3 e IQR
+# q1 = tar_values.quantile(0.25)
+# q3 = tar_values.quantile(0.75)
+# iqr = q3 - q1
+#
+# # soglie per outlier
+# lower_thr = q1 - 1.5 * iqr
+# upper_thr = q3 + 1.5 * iqr
+#
+# print(f"Q1 = {q1:.2f}%, Q3 = {q3:.2f}%, IQR = {iqr:.2f}%")
+# print(f"Soglia inferiore = {lower_thr:.2f}%, soglia superiore = {upper_thr:.2f}%")
+# outliers = tar_values[(tar_values < lower_thr) | (tar_values > upper_thr)]
+# print("Valori TARLV2 considerati outlier:")
+# print(outliers.sort_values().to_list())
+#
+#
+#
+# # Output
+# print(f"Media: {media:.2f}")
+# print(f"Mediana: {mediana:.2f}")
+# print(f"Asimmetria (skewness): {asimmetria:.2f}")
+# print(f"Curtosi (kurtosis): {curtosi:.2f}")
+# print(f"Numero di outlier: {len(outliers)}")
+# print("Moda:", moda.tolist())
+############################################################################################
+
+
 # ANALISI TBR
 ############################################################################################
-# Funzione per calcolare il TBR di un paziente
-def calculate_tbr(misurazioni): # Prende in ingresso l'insieme di misurazioni di un singolo paziente
-    totale = len(misurazioni)   # Calcola il numero totale di misurazioni del paziente
-    righe_valide = misurazioni[(misurazioni['Measurement'] < 70)] # Seleziona solo le righe che nel campo Measurement hanno un valore minore di 70 mg/dL
-    tbr = len(righe_valide)/totale * 100 # Calcola il %TBR facendo Misurazioni Valide/Misurazioni Totali
-    return tbr
+# # Funzione per calcolare il TBR di un paziente
+# def calculate_tbr(misurazioni): # Prende in ingresso l'insieme di misurazioni di un singolo paziente
+#     totale = len(misurazioni)   # Calcola il numero totale di misurazioni del paziente
+#     righe_valide = misurazioni[(misurazioni['Measurement'] < 70)] # Seleziona solo le righe che nel campo Measurement hanno un valore minore di 70 mg/dL
+#     tbr = len(righe_valide)/totale * 100 # Calcola il %TBR facendo Misurazioni Valide/Misurazioni Totali
+#     return tbr
+#
+# pazienti = df.groupby('Patient_ID') # Dividiamo il dataset per paziente, ogni gruppo contiene le misurazioni di un singolo paziente
+# tbr_by_paziente = pazienti.apply(calculate_tbr).reset_index(name='%TBR') # Calcoliamo il TBR di ogni paziente e creiamo un nuovo dataset con 2 colonne: Ptient_ID e %TBR
+# # tbr_by_paziente = tbr_by_paziente.sort_values(by='%TBR', ascending=False)
+# print(tbr_by_paziente)
+#
+# # Grafico per la percentuale di ogni paziente
+# plt.figure(figsize=(14, 6))
+# plt.bar(tbr_by_paziente['Patient_ID'], tbr_by_paziente['%TBR'], color='skyblue')
+# plt.xticks([])
+# plt.ylabel('% Time Below Range (< 70 mg/dL)')
+# plt.xlabel('Pazienti')
+# plt.title('')
+# plt.tight_layout()
+# plt.show()
+#
+# # Statistiche descrittive di %TBR
+# print(tbr_by_paziente['%TBR'].describe())
+#
+# # Raggruppiamo i valori di %TBR in intervalli di 5% (es. 0-5%, 5-10%, ..., 95-100%)
+# tbr_intervals = pd.cut(tbr_by_paziente['%TBR'], bins=range(0, 110, 10), right=False)  #Notazione [0,10) 0 é incluso ma 10 no
+#
+# # Conteggio dei pazienti per ciascun intervallo
+# pazienti_per_interval = tbr_intervals.value_counts().sort_index()
+#
+# print(pazienti_per_interval)
+#
+# # Istogramma del numero di pazienti per ciascun intervallo di %TBR
+# plt.figure(figsize=(10, 6))
+# bars = pazienti_per_interval.plot(kind='bar', color='skyblue', edgecolor='black')
+#
+# for bar in bars.patches:
+#     height = bar.get_height()  # Otteniamo l'altezza della barra (numero di pazienti)
+#     bar.set_edgecolor('black')  # Impostiamo il bordo della barra
+#     bar.set_linewidth(1)  # Impostiamo lo spessore del bordo
+#     plt.text(bar.get_x() + bar.get_width() / 2, height + 0.5, int(height),
+#              ha='center', va='bottom', fontsize=10, color='black')
+#
+# plt.title('')
+# plt.xlabel('%TBR')
+# plt.ylabel('Numero di Pazienti')
+# plt.xticks(rotation=45)
+# plt.tight_layout()
+# plt.show()
+#
+#
+# tbr_values = tbr_by_paziente['%TBR']
+#
+# # Statistiche descrittive
+# media = tbr_values.mean()
+# mediana = tbr_values.median()
+# asimmetria = skew(tbr_values) #skewness
+# curtosi = kurtosis(tbr_values)
+#
+# tar_arrotondato = tbr_values.round()
+# moda = tar_arrotondato.mode()
+#
+# # Outlier con metodo IQR (Interquartile Range)
+# # calcola Q1, Q3 e IQR
+# q1 = tbr_values.quantile(0.25)
+# q3 = tbr_values.quantile(0.75)
+# iqr = q3 - q1
+#
+# # soglie per outlier
+# lower_thr = q1 - 1.5 * iqr
+# upper_thr = q3 + 1.5 * iqr
+#
+# print(f"Q1 = {q1:.2f}%, Q3 = {q3:.2f}%, IQR = {iqr:.2f}%")
+# print(f"Soglia inferiore = {lower_thr:.2f}%, soglia superiore = {upper_thr:.2f}%")
+# outliers = tbr_values[(tbr_values < lower_thr) | (tbr_values > upper_thr)]
+# print("Valori TBR considerati outlier:")
+# print(outliers.sort_values().to_list())
+#
+#
+#
+# # Output
+# print(f"Media: {media:.2f}")
+# print(f"Mediana: {mediana:.2f}")
+# print(f"Asimmetria (skewness): {asimmetria:.2f}")
+# print(f"Curtosi (kurtosis): {curtosi:.2f}")
+# print(f"Numero di outlier: {len(outliers)}")
+# print("Moda:", moda.tolist())
+############################################################################################
 
-pazienti = df.groupby('Patient_ID') # Dividiamo il dataset per paziente, ogni gruppo contiene le misurazioni di un singolo paziente
-tbr_by_paziente = pazienti.apply(calculate_tbr).reset_index(name='%TBR') # Calcoliamo il TBR di ogni paziente e creiamo un nuovo dataset con 2 colonne: Ptient_ID e %TBR
-# tbr_by_paziente = tbr_by_paziente.sort_values(by='%TBR', ascending=False)
-print(tbr_by_paziente)
 
-# Grafico per la percentuale di ogni paziente
-plt.figure(figsize=(14, 6))
-plt.bar(tbr_by_paziente['Patient_ID'], tbr_by_paziente['%TBR'], color='skyblue')
-plt.xticks([])
-plt.ylabel('% Time Below Range (< 70 mg/dL)')
-plt.title('')
-plt.tight_layout()
-plt.show()
+# ANALISI TBR LV1
+############################################################################################
+# # Funzione per calcolare il TBRLV1 di un paziente
+# def calculate_tbr(misurazioni): # Prende in ingresso l'insieme di misurazioni di un singolo paziente
+#     totale = len(misurazioni)   # Calcola il numero totale di misurazioni del paziente
+#     righe_valide = misurazioni[(misurazioni['Measurement'] >= 54) & (misurazioni['Measurement'] < 70)] # Seleziona solo le righe che nel campo Measurement hanno un valore compreso tra 54 e 70 mg/dL
+#     tbr = len(righe_valide)/totale * 100 # Calcola il %TBRLV1 facendo Misurazioni Valide/Misurazioni Totali
+#     return tbr
+#
+# pazienti = df.groupby('Patient_ID') # Dividiamo il dataset per paziente, ogni gruppo contiene le misurazioni di un singolo paziente
+# tbr_by_paziente = pazienti.apply(calculate_tbr).reset_index(name='%TBRLV1') # Calcoliamo il TBRLV1 di ogni paziente e creiamo un nuovo dataset con 2 colonne: Ptient_ID e %TBRLV1
+# # tbr_by_paziente = tbr_by_paziente.sort_values(by='%TBRLV1', ascending=False)
+# print(tbr_by_paziente)
+#
+# # Grafico per la percentuale di ogni paziente
+# plt.figure(figsize=(14, 6))
+# plt.bar(tbr_by_paziente['Patient_ID'], tbr_by_paziente['%TBRLV1'], color='#ffa07a')
+# plt.xticks([])
+# plt.ylabel('% Time Below Range (54 - 70 mg/dL)')
+# plt.xlabel('Pazienti')
+# plt.title('')
+# plt.tight_layout()
+# plt.show()
+#
+# # Statistiche descrittive di %TBRLV1
+# print(tbr_by_paziente['%TBRLV1'].describe())
+#
+# # Raggruppiamo i valori di %TBRLV1 in intervalli di 5% (es. 0-5%, 5-10%, ..., 95-100%)
+# tbr_intervals = pd.cut(tbr_by_paziente['%TBRLV1'], bins=range(0, 110, 10), right=False)  #Notazione [0,10) 0 é incluso ma 10 no
+#
+# # Conteggio dei pazienti per ciascun intervallo
+# pazienti_per_interval = tbr_intervals.value_counts().sort_index()
+#
+# print(pazienti_per_interval)
+#
+# # Istogramma del numero di pazienti per ciascun intervallo di %TBRLV1
+# plt.figure(figsize=(10, 6))
+# bars = pazienti_per_interval.plot(kind='bar', color='#ffa07a', edgecolor='black')
+#
+# for bar in bars.patches:
+#     height = bar.get_height()  # Otteniamo l'altezza della barra (numero di pazienti)
+#     bar.set_edgecolor('black')  # Impostiamo il bordo della barra
+#     bar.set_linewidth(1)  # Impostiamo lo spessore del bordo
+#     plt.text(bar.get_x() + bar.get_width() / 2, height + 0.5, int(height),
+#              ha='center', va='bottom', fontsize=10, color='black')
+#
+# plt.title('')
+# plt.xlabel('%TBRLV1')
+# plt.ylabel('Numero di Pazienti')
+# plt.xticks(rotation=45)
+# plt.tight_layout()
+# plt.show()
+#
+#
+# tbr_values = tbr_by_paziente['%TBRLV1']
+#
+# # Statistiche descrittive
+# media = tbr_values.mean()
+# mediana = tbr_values.median()
+# asimmetria = skew(tbr_values) #skewness
+# curtosi = kurtosis(tbr_values)
+#
+# tar_arrotondato = tbr_values.round()
+# moda = tar_arrotondato.mode()
+#
+# # Outlier con metodo IQR (Interquartile Range)
+# # calcola Q1, Q3 e IQR
+# q1 = tbr_values.quantile(0.25)
+# q3 = tbr_values.quantile(0.75)
+# iqr = q3 - q1
+#
+# # soglie per outlier
+# lower_thr = q1 - 1.5 * iqr
+# upper_thr = q3 + 1.5 * iqr
+#
+# print(f"Q1 = {q1:.2f}%, Q3 = {q3:.2f}%, IQR = {iqr:.2f}%")
+# print(f"Soglia inferiore = {lower_thr:.2f}%, soglia superiore = {upper_thr:.2f}%")
+# outliers = tbr_values[(tbr_values < lower_thr) | (tbr_values > upper_thr)]
+# print("Valori TBRLV1 considerati outlier:")
+# print(outliers.sort_values().to_list())
+#
+#
+#
+# # Output
+# print(f"Media: {media:.2f}")
+# print(f"Mediana: {mediana:.2f}")
+# print(f"Asimmetria (skewness): {asimmetria:.2f}")
+# print(f"Curtosi (kurtosis): {curtosi:.2f}")
+# print(f"Numero di outlier: {len(outliers)}")
+# print("Moda:", moda.tolist())
+############################################################################################
 
-# Statistiche descrittive di %TBR
-print(tbr_by_paziente['%TBR'].describe())
 
-# Raggruppiamo i valori di %TBR in intervalli di 5% (es. 0-5%, 5-10%, ..., 95-100%)
-tbr_intervals = pd.cut(tbr_by_paziente['%TBR'], bins=range(0, 110, 10), right=False)  #Notazione [0,10) 0 é incluso ma 10 no
-
-# Conteggio dei pazienti per ciascun intervallo
-pazienti_per_interval = tbr_intervals.value_counts().sort_index()
-
-print(pazienti_per_interval)
-
-# Istogramma del numero di pazienti per ciascun intervallo di %TBR
-plt.figure(figsize=(10, 6))
-bars = pazienti_per_interval.plot(kind='bar', color='skyblue', edgecolor='black')
-
-for bar in bars.patches:
-    height = bar.get_height()  # Otteniamo l'altezza della barra (numero di pazienti)
-    bar.set_edgecolor('black')  # Impostiamo il bordo della barra
-    bar.set_linewidth(1)  # Impostiamo lo spessore del bordo
-    plt.text(bar.get_x() + bar.get_width() / 2, height + 0.5, int(height),
-             ha='center', va='bottom', fontsize=10, color='black')
-
-plt.title('')
-plt.xlabel('%TBR')
-plt.ylabel('Numero di Pazienti')
-plt.xticks(rotation=45)
-plt.tight_layout()
-plt.show()
-
-
-tbr_values = tbr_by_paziente['%TBR']
-
-# Statistiche descrittive
-media = tbr_values.mean()
-mediana = tbr_values.median()
-asimmetria = skew(tbr_values) #skewness
-curtosi = kurtosis(tbr_values)
-
-tar_arrotondato = tbr_values.round()
-moda = tar_arrotondato.mode()
-
-# Outlier con metodo IQR (Interquartile Range)
-# calcola Q1, Q3 e IQR
-q1 = tbr_values.quantile(0.25)
-q3 = tbr_values.quantile(0.75)
-iqr = q3 - q1
-
-# soglie per outlier
-lower_thr = q1 - 1.5 * iqr
-upper_thr = q3 + 1.5 * iqr
-
-print(f"Q1 = {q1:.2f}%, Q3 = {q3:.2f}%, IQR = {iqr:.2f}%")
-print(f"Soglia inferiore = {lower_thr:.2f}%, soglia superiore = {upper_thr:.2f}%")
-outliers = tbr_values[(tbr_values < lower_thr) | (tbr_values > upper_thr)]
-print("Valori TBR considerati outlier:")
-print(outliers.sort_values().to_list())
-
-
-
-# Output
-print(f"Media: {media:.2f}")
-print(f"Mediana: {mediana:.2f}")
-print(f"Asimmetria (skewness): {asimmetria:.2f}")
-print(f"Curtosi (kurtosis): {curtosi:.2f}")
-print(f"Numero di outlier: {len(outliers)}")
-print("Moda:", moda.tolist())
+# ANALISI TBR LV2
+############################################################################################
+# # Funzione per calcolare il TBRLV2 di un paziente
+# def calculate_tbr(misurazioni): # Prende in ingresso l'insieme di misurazioni di un singolo paziente
+#     totale = len(misurazioni)   # Calcola il numero totale di misurazioni del paziente
+#     righe_valide = misurazioni[(misurazioni['Measurement'] < 54)] # Seleziona solo le righe che nel campo Measurement hanno un valore minore di 54 mg/dL
+#     tbr = len(righe_valide)/totale * 100 # Calcola il %TBRLV2 facendo Misurazioni Valide/Misurazioni Totali
+#     return tbr
+#
+# pazienti = df.groupby('Patient_ID') # Dividiamo il dataset per paziente, ogni gruppo contiene le misurazioni di un singolo paziente
+# tbr_by_paziente = pazienti.apply(calculate_tbr).reset_index(name='%TBRLV2') # Calcoliamo il TBRLV2 di ogni paziente e creiamo un nuovo dataset con 2 colonne: Ptient_ID e %TBRLV2
+# # tbr_by_paziente = tbr_by_paziente.sort_values(by='%TBRLV2', ascending=False)
+# print(tbr_by_paziente)
+#
+# # Grafico per la percentuale di ogni paziente
+# plt.figure(figsize=(14, 6))
+# plt.bar(tbr_by_paziente['Patient_ID'], tbr_by_paziente['%TBRLV2'], color='#e64100')
+# plt.xticks([])
+# plt.ylabel('% Time Below Range (< 54 mg/dL)')
+# plt.xlabel('Pazienti')
+# plt.title('')
+# plt.tight_layout()
+# plt.show()
+#
+# # Statistiche descrittive di %TBRLV2
+# print(tbr_by_paziente['%TBRLV2'].describe())
+#
+# # Raggruppiamo i valori di %TBRLV2 in intervalli di 5% (es. 0-5%, 5-10%, ..., 95-100%)
+# tbr_intervals = pd.cut(tbr_by_paziente['%TBRLV2'], bins=range(0, 110, 10), right=False)  #Notazione [0,10) 0 é incluso ma 10 no
+#
+# # Conteggio dei pazienti per ciascun intervallo
+# pazienti_per_interval = tbr_intervals.value_counts().sort_index()
+#
+# print(pazienti_per_interval)
+#
+# # Istogramma del numero di pazienti per ciascun intervallo di %TBRLV2
+# plt.figure(figsize=(10, 6))
+# bars = pazienti_per_interval.plot(kind='bar', color='#e64100', edgecolor='black')
+#
+# for bar in bars.patches:
+#     height = bar.get_height()  # Otteniamo l'altezza della barra (numero di pazienti)
+#     bar.set_edgecolor('black')  # Impostiamo il bordo della barra
+#     bar.set_linewidth(1)  # Impostiamo lo spessore del bordo
+#     plt.text(bar.get_x() + bar.get_width() / 2, height + 0.5, int(height),
+#              ha='center', va='bottom', fontsize=10, color='black')
+#
+# plt.title('')
+# plt.xlabel('%TBRLV2')
+# plt.ylabel('Numero di Pazienti')
+# plt.xticks(rotation=45)
+# plt.tight_layout()
+# plt.show()
+#
+#
+# tbr_values = tbr_by_paziente['%TBRLV2']
+#
+# # Statistiche descrittive
+# media = tbr_values.mean()
+# mediana = tbr_values.median()
+# asimmetria = skew(tbr_values) #skewness
+# curtosi = kurtosis(tbr_values)
+#
+# tar_arrotondato = tbr_values.round()
+# moda = tar_arrotondato.mode()
+#
+# # Outlier con metodo IQR (Interquartile Range)
+# # calcola Q1, Q3 e IQR
+# q1 = tbr_values.quantile(0.25)
+# q3 = tbr_values.quantile(0.75)
+# iqr = q3 - q1
+#
+# # soglie per outlier
+# lower_thr = q1 - 1.5 * iqr
+# upper_thr = q3 + 1.5 * iqr
+#
+# print(f"Q1 = {q1:.2f}%, Q3 = {q3:.2f}%, IQR = {iqr:.2f}%")
+# print(f"Soglia inferiore = {lower_thr:.2f}%, soglia superiore = {upper_thr:.2f}%")
+# outliers = tbr_values[(tbr_values < lower_thr) | (tbr_values > upper_thr)]
+# print("Valori TBRLV2 considerati outlier:")
+# print(outliers.sort_values().to_list())
+#
+#
+#
+# # Output
+# print(f"Media: {media:.2f}")
+# print(f"Mediana: {mediana:.2f}")
+# print(f"Asimmetria (skewness): {asimmetria:.2f}")
+# print(f"Curtosi (kurtosis): {curtosi:.2f}")
+# print(f"Numero di outlier: {len(outliers)}")
+# print("Moda:", moda.tolist())
 ############################################################################################
