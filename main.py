@@ -4,8 +4,7 @@ from scipy.stats import skew, kurtosis
 import numpy as np
 import seaborn as sns
 from sklearn.preprocessing import LabelEncoder
-from datetime import datetime
-
+from datetime import datetime, timedelta
 
 #FORMATTAZIONE DELLA TABELLA MOSTRATA DA TERMINALE
 ############################################################################################
@@ -321,7 +320,7 @@ pd.set_option('display.max_colwidth', None)
 ############################################################################################
 
 df = pd.read_csv("Excel/Glucose_measurements.csv")
-df = df[(df['Measurement'].notna()) & (df['Measurement'] >= 40) &  (df['Measurement'] <= 500)]
+# df = df[(df['Measurement'].notna()) & (df['Measurement'] >= 40) &  (df['Measurement'] <= 500)]
 #Pulizia del dataset per eliminare valori di glucosio nulli o fisiologicamente impossibili (comunque non ce ne sono)
 
 #ANALISI TIR
@@ -960,3 +959,105 @@ df = df[(df['Measurement'].notna()) & (df['Measurement'] >= 40) &  (df['Measurem
 # print(f"Numero di outlier: {len(outliers)}")
 # print("Moda:", moda.tolist())
 ############################################################################################
+
+
+#CREAZIONE DATASET CON DATA E VALORE DEI PARAMETRI BIOCHIMICI E NUMERO DI MISURAZIONI DEL GLUCOSIO CON RELATIVO VALORE MEDIO FATTO IN UN INTORNO DI 3 GIORNI DA QUELLA DATA
+############################################################################################
+
+# # Carica e prepara i dati
+# df_glucose = pd.read_csv("Excel/Glucose_measurements.csv", parse_dates=["Measurement_date"])
+# df_bio = pd.read_csv("Excel/Biochemical_parameters.csv", parse_dates=["Reception_date"])
+#
+# from tqdm import tqdm
+#
+#
+# records = []
+#
+# # Ottieni i pazienti presenti in entrambi i dataset
+# common_patients = set(df_bio['Patient_ID']).intersection(set(df_glucose['Patient_ID']))
+#
+# # Loop per paziente
+# for pid in tqdm(common_patients):
+#     glucose_p = df_glucose[df_glucose['Patient_ID'] == pid].copy()
+#     bio_p = df_bio[df_bio['Patient_ID'] == pid].copy()
+#
+#     # Ordina per efficienza (opzionale)
+#     glucose_p.sort_values("Measurement_date", inplace=True)
+#
+#     for _, bio_row in bio_p.iterrows():
+#         reception_date = bio_row["Reception_date"]
+#         param_name = bio_row["Name"]
+#         param_value = bio_row["Value"]
+#
+#         # Trova misurazioni entro ±3 giorni
+#         mask = (
+#                 (glucose_p["Measurement_date"] >= reception_date - timedelta(days=3)) &
+#                 (glucose_p["Measurement_date"] <= reception_date + timedelta(days=3))
+#         )
+#         nearby = glucose_p[mask]
+#
+#         if not nearby.empty:
+#             records.append({
+#                 "Patient_ID": pid,
+#                 "Parameter": param_name,
+#                 "Parameter_Value": param_value,
+#                 "Reception_Date": reception_date,
+#                 "Avg_Glucose": nearby["Measurement"].mean(),
+#                 "Num_Glucose_Readings": len(nearby)
+#             })
+#
+# # 1) Trasforma records in DataFrame
+# df_results = pd.DataFrame(records)
+#
+# # 2) Salvalo in CSV nella cartella Excel
+# output_path = "Excel/glucose_bio_correlated.csv"
+# df_results.to_csv(output_path, index=False)
+#
+# print(f"Saved {len(df_results)} rows to {output_path}")
+
+############################################################################################
+
+
+#RELAZIONE TRA VALORI DI GLUCOSIO E VALORI DELLE ANALISI FATTE
+
+df2 = pd.read_csv("Excel/glucose_bio_correlated.csv",parse_dates=["Reception_Date"])
+
+# 1) Valore massimo di Parameter_Value
+max_param_value = df2["Parameter_Value"].max()
+# Individua la riga in cui avviene
+row_max_param = df2.loc[df2["Parameter_Value"].idxmax()]
+
+# 2) Valore massimo di Avg_Glucose
+max_avg_glucose = df2["Avg_Glucose"].max()
+# Individua la riga in cui avviene
+row_max_gluc = df2.loc[df2["Avg_Glucose"].idxmax()]
+
+print(f"Massimo Parameter_Value: {max_param_value}")
+print("Record corrispondente:")
+print(row_max_param)
+
+print(f"\nMassimo Avg_Glucose: {max_avg_glucose}")
+print("Record corrispondente:")
+print(row_max_gluc)
+
+params = df2["Parameter"].unique()
+n = len(params)
+cols = 4
+rows = (n + cols - 1) // cols
+
+fig, axes = plt.subplots(rows, cols, figsize=(cols*4, rows*3))
+axes = axes.flatten()
+
+for ax, param in zip(axes, params):
+    sub = df2[df2["Parameter"] == param]
+    ax.scatter(sub["Parameter_Value"], sub["Avg_Glucose"])
+    ax.set_title(param, fontsize=8)
+    ax.set_xlabel("Param value", fontsize=6)
+    ax.set_ylabel("Avg Glucose", fontsize=6)
+
+# elimina assi vuoti
+for ax in axes[n:]:
+    ax.set_visible(False)
+
+plt.tight_layout()
+plt.show()
