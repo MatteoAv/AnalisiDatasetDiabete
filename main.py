@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+from pywin.framework.editor.ModuleBrowser import HierListCLBRErrorItem
 from scipy.stats import skew, kurtosis
 import numpy as np
 import seaborn as sns
@@ -320,21 +321,22 @@ pd.set_option('display.max_colwidth', None)
 ############################################################################################
 
 df = pd.read_csv("Excel/Glucose_measurements.csv")
-# df = df[(df['Measurement'].notna()) & (df['Measurement'] >= 40) &  (df['Measurement'] <= 500)]
-#Pulizia del dataset per eliminare valori di glucosio nulli o fisiologicamente impossibili (comunque non ce ne sono)
+diagnostics = pd.read_csv("Excel/Diagnostics.csv")
 
-#ANALISI TIR
+# df = df[(df['Measurement'].notna()) & (df['Measurement'] >= 40) &  (df['Measurement'] <= 500)]
+# Pulizia del dataset per eliminare valori di glucosio nulli o fisiologicamente impossibili (comunque non ce ne sono)
+
+# ANALISI TIR
 ############################################################################################
 # # Funzione per calcolare il TIR di un paziente
-# def calculate_tir(misurazioni): # Prende in ingresso l'insieme di misurazioni di un singolo paziente
+# def calculate_tir(misurazioni):  # Prende in ingresso l'insieme di misurazioni di un singolo paziente
 #     totale = len(misurazioni)   # Calcola il numero totale di misurazioni del paziente
-#     righe_valide = misurazioni[(misurazioni['Measurement'] >= 70) & (misurazioni['Measurement'] <= 180)] # Seleziona solo le righe che nel campo Measurement hanno un valore compreso tra 70 e 180 mg/dL
-#     tir = len(righe_valide)/totale * 100 # Calcola il %TIR facendo Misurazioni Valide/Misurazioni Totali
+#     righe_valide = misurazioni[(misurazioni['Measurement'] >= 70) & (misurazioni['Measurement'] <= 180)]  # Seleziona solo le righe che nel campo Measurement hanno un valore compreso tra 70 e 180 mg/dL
+#     tir = len(righe_valide)/totale * 100  # Calcola il %TIR facendo Misurazioni Valide / Misurazioni Totali
 #     return tir
 #
-# pazienti = df.groupby('Patient_ID') # Dividiamo il dataset per paziente, ogni gruppo contiene le misurazioni di un singolo paziente
-# tir_by_paziente = pazienti.apply(calculate_tir).reset_index(name='%TIR') # Calcoliamo il TIR di ogni paziente e creiamo un nuovo dataset con 2 colonne: Ptient_ID e %TIR
-# # tir_by_paziente = tir_by_paziente.sort_values(by='%TIR', ascending=False)
+# pazienti = df.groupby('Patient_ID')  # Dividiamo il dataset per paziente, ogni gruppo contiene le misurazioni di un singolo paziente
+# tir_by_paziente = pazienti.apply(calculate_tir).reset_index(name='%TIR')  # Calcoliamo il TIR di ogni paziente e creiamo un nuovo dataset con 2 colonne: Patient_ID e %TIR
 # print(tir_by_paziente)
 #
 # # Grafico per la percentuale di ogni paziente
@@ -350,39 +352,52 @@ df = pd.read_csv("Excel/Glucose_measurements.csv")
 # # Statistiche descrittive di %TIR
 # print(tir_by_paziente['%TIR'].describe())
 #
-# # Raggruppiamo i valori di %TIR in intervalli di 5% (es. 0-5%, 5-10%, ..., 95-100%)
-# tir_intervals = pd.cut(tir_by_paziente['%TIR'], bins=range(0, 110, 10), right=False)  #Notazione [0,10) 0 é incluso ma 10 no
+# # Raggruppiamo i valori di %TIR in intervalli (0,1), [1,10), [10,20), ...
+# bins = [0, 1] + list(range(10, 110, 10))
+# tir_intervals = pd.cut(tir_by_paziente['%TIR'], bins=bins, right=False)
 #
-# # Conteggio dei pazienti per ciascun intervallo
-# pazienti_per_interval = tir_intervals.value_counts().sort_index()
+# # Aggiungiamo colonna per sapere se il paziente ha almeno una diagnosi
+# pazienti_con_diagnosi = set(diagnostics['Patient_ID'])
+# tir_by_paziente['Has_Diagnosis'] = tir_by_paziente['Patient_ID'].isin(pazienti_con_diagnosi)
 #
-# print(pazienti_per_interval)
+# # Aggiungiamo anche gli intervalli nel dataframe
+# tir_by_paziente['Interval'] = tir_intervals
 #
-# # Istogramma del numero di pazienti per ciascun intervallo di %TIR
-# plt.figure(figsize=(10, 6))
-# bars = pazienti_per_interval.plot(kind='bar', color='skyblue', edgecolor='black')
+# # Calcoliamo il numero di pazienti CON e SENZA diagnosi per ogni intervallo
+# conta_per_interval = tir_by_paziente.groupby(['Interval', 'Has_Diagnosis']).size().unstack(fill_value=0)
+# conta_per_interval = conta_per_interval.sort_index()
 #
-# for bar in bars.patches:
-#     height = bar.get_height()  # Otteniamo l'altezza della barra (numero di pazienti)
-#     bar.set_edgecolor('black')  # Impostiamo il bordo della barra
-#     bar.set_linewidth(1)  # Impostiamo lo spessore del bordo
-#     plt.text(bar.get_x() + bar.get_width() / 2, height + 0.5, int(height),
-#              ha='center', va='bottom', fontsize=10, color='black')
+# # Istogramma con due barre affiancate per ogni intervallo, con etichette
+# plt.figure(figsize=(12, 6))
+# bar_width = 0.4
+# index = range(len(conta_per_interval))
 #
-# plt.title('')
+# bar1 = plt.bar([i - bar_width/2 for i in index], conta_per_interval[False], width=bar_width, label='Senza Complicanze', color='skyblue', edgecolor='black')
+# bar2 = plt.bar([i + bar_width/2 for i in index], conta_per_interval[True], width=bar_width, label='Con Complicanze', color='lightcoral', edgecolor='black')
+#
+# # Aggiunta delle etichette numeriche sopra ogni barra
+# for bars in [bar1, bar2]:
+#     for bar in bars:
+#         height = bar.get_height()
+#         if height > 0:
+#             plt.text(bar.get_x() + bar.get_width()/2, height + 0.5, str(int(height)), ha='center', va='bottom', fontsize=9)
+#
+#
+# plt.xticks(index, [str(i) for i in conta_per_interval.index], rotation=45)
 # plt.xlabel('%TIR')
 # plt.ylabel('Numero di Pazienti')
-# plt.xticks(rotation=45)
+# plt.title('')
+# plt.legend()
 # plt.tight_layout()
 # plt.show()
 #
 #
+# # STATISTICHE DESCRITTIVE
 # tir_values = tir_by_paziente['%TIR']
 #
-# # Statistiche descrittive
 # media = tir_values.mean()
 # mediana = tir_values.median()
-# asimmetria = skew(tir_values) #skewness
+# asimmetria = skew(tir_values)  # skewness
 # curtosi = kurtosis(tir_values)
 #
 # tir_arrotondato = tir_values.round()
@@ -430,31 +445,45 @@ df = pd.read_csv("Excel/Glucose_measurements.csv")
 # # Statistiche descrittive di %TAR
 # print(tar_by_paziente['%TAR'].describe())
 #
-# # Raggruppiamo i valori di %TAR in intervalli di 5% (es. 0-5%, 5-10%, ..., 95-100%)
-# tar_intervals = pd.cut(tar_by_paziente['%TAR'], bins=range(0, 110, 10), right=False)  #Notazione [0,10) 0 é incluso ma 10 no
+# bins = [0, 1] + list(range(10, 110, 10))
+# tar_intervals = pd.cut(tar_by_paziente['%TAR'], bins=bins, right=False)
+# #Notazione [0,10) 0 é incluso ma 10 no
 #
-# # Conteggio dei pazienti per ciascun intervallo
-# pazienti_per_interval = tar_intervals.value_counts().sort_index()
+# # Aggiungiamo colonna per sapere se il paziente ha almeno una diagnosi
+# pazienti_con_diagnosi = set(diagnostics['Patient_ID'])
+# tar_by_paziente['Has_Diagnosis'] = tar_by_paziente['Patient_ID'].isin(pazienti_con_diagnosi)
 #
-# print(pazienti_per_interval)
+# # Aggiungiamo anche gli intervalli nel dataframe
+# tar_by_paziente['Interval'] = tar_intervals
 #
-# # Istogramma del numero di pazienti per ciascun intervallo di %TAR
-# plt.figure(figsize=(10, 6))
-# bars = pazienti_per_interval.plot(kind='bar', color='skyblue', edgecolor='black')
+# # Calcoliamo il numero di pazienti CON e SENZA diagnosi per ogni intervallo
+# conta_per_interval = tar_by_paziente.groupby(['Interval', 'Has_Diagnosis']).size().unstack(fill_value=0)
+# conta_per_interval = conta_per_interval.sort_index()
 #
-# for bar in bars.patches:
-#     height = bar.get_height()  # Otteniamo l'altezza della barra (numero di pazienti)
-#     bar.set_edgecolor('black')  # Impostiamo il bordo della barra
-#     bar.set_linewidth(1)  # Impostiamo lo spessore del bordo
-#     plt.text(bar.get_x() + bar.get_width() / 2, height + 0.5, int(height),
-#              ha='center', va='bottom', fontsize=10, color='black')
+# # Istogramma con due barre affiancate per ogni intervallo, con etichette
+# plt.figure(figsize=(12, 6))
+# bar_width = 0.4
+# index = range(len(conta_per_interval))
 #
-# plt.title('')
+# bar1 = plt.bar([i - bar_width/2 for i in index], conta_per_interval[False], width=bar_width, label='Senza Complicanze', color='skyblue', edgecolor='black')
+# bar2 = plt.bar([i + bar_width/2 for i in index], conta_per_interval[True], width=bar_width, label='Con Complicanze', color='lightcoral', edgecolor='black')
+#
+# # Aggiunta delle etichette numeriche sopra ogni barra
+# for bars in [bar1, bar2]:
+#     for bar in bars:
+#         height = bar.get_height()
+#         if height > 0:
+#             plt.text(bar.get_x() + bar.get_width()/2, height + 0.5, str(int(height)), ha='center', va='bottom', fontsize=9)
+#
+#
+# plt.xticks(index, [str(i) for i in conta_per_interval.index], rotation=45)
 # plt.xlabel('%TAR')
 # plt.ylabel('Numero di Pazienti')
-# plt.xticks(rotation=45)
+# plt.title('')
+# plt.legend()
 # plt.tight_layout()
 # plt.show()
+#
 #
 #
 # tar_values = tar_by_paziente['%TAR']
@@ -523,29 +552,43 @@ df = pd.read_csv("Excel/Glucose_measurements.csv")
 # # Statistiche descrittive di %TARLV1
 # print(tar_by_paziente['%TARLV1'].describe())
 #
-# # Raggruppiamo i valori di %TARLV1 in intervalli di 5% (es. 0-5%, 5-10%, ..., 95-100%)
-# tar_intervals = pd.cut(tar_by_paziente['%TARLV1'], bins=range(0, 110, 10), right=False)  #Notazione [0,10) 0 é incluso ma 10 no
+# bins = [0, 1] + list(range(10, 110, 10))
+# tar_intervals = pd.cut(tar_by_paziente['%TARLV1'], bins=bins, right=False)
+# #Notazione [0,10) 0 é incluso ma 10 no
 #
-# # Conteggio dei pazienti per ciascun intervallo
-# pazienti_per_interval = tar_intervals.value_counts().sort_index()
+# # Aggiungiamo colonna per sapere se il paziente ha almeno una diagnosi
+# pazienti_con_diagnosi = set(diagnostics['Patient_ID'])
+# tar_by_paziente['Has_Diagnosis'] = tar_by_paziente['Patient_ID'].isin(pazienti_con_diagnosi)
 #
-# print(pazienti_per_interval)
+# # Aggiungiamo anche gli intervalli nel dataframe
+# tar_by_paziente['Interval'] = tar_intervals
 #
-# # Istogramma del numero di pazienti per ciascun intervallo di %TARLV1
-# plt.figure(figsize=(10, 6))
-# bars = pazienti_per_interval.plot(kind='bar', color='#ffa07a')
+# # Calcoliamo il numero di pazienti CON e SENZA diagnosi per ogni intervallo
+# conta_per_interval = tar_by_paziente.groupby(['Interval', 'Has_Diagnosis']).size().unstack(fill_value=0)
+# conta_per_interval = conta_per_interval.sort_index()
 #
-# for bar in bars.patches:
-#     height = bar.get_height()  # Otteniamo l'altezza della barra (numero di pazienti)
-#     bar.set_edgecolor('black')  # Impostiamo il bordo della barra
-#     bar.set_linewidth(1)  # Impostiamo lo spessore del bordo
-#     plt.text(bar.get_x() + bar.get_width() / 2, height + 0.5, int(height),
-#              ha='center', va='bottom', fontsize=10, color='black')
 #
-# plt.title('')
+# # Istogramma con due barre affiancate per ogni intervallo, con etichette
+# plt.figure(figsize=(12, 6))
+# bar_width = 0.4
+# index = range(len(conta_per_interval))
+#
+# bar1 = plt.bar([i - bar_width/2 for i in index], conta_per_interval[False], width=bar_width, label='Senza Complicanze', color='skyblue', edgecolor='black')
+# bar2 = plt.bar([i + bar_width/2 for i in index], conta_per_interval[True], width=bar_width, label='Con Complicanze', color='lightcoral', edgecolor='black')
+#
+# # Aggiunta delle etichette numeriche sopra ogni barra
+# for bars in [bar1, bar2]:
+#     for bar in bars:
+#         height = bar.get_height()
+#         if height > 0:
+#             plt.text(bar.get_x() + bar.get_width()/2, height + 0.5, str(int(height)), ha='center', va='bottom', fontsize=9)
+#
+#
+# plt.xticks(index, [str(i) for i in conta_per_interval.index], rotation=45)
 # plt.xlabel('%TARLV1')
 # plt.ylabel('Numero di Pazienti')
-# plt.xticks(rotation=45)
+# plt.title('')
+# plt.legend()
 # plt.tight_layout()
 # plt.show()
 #
@@ -616,29 +659,42 @@ df = pd.read_csv("Excel/Glucose_measurements.csv")
 # # Statistiche descrittive di %TARLV2
 # print(tar_by_paziente['%TARLV2'].describe())
 #
-# # Raggruppiamo i valori di %TARLV2 in intervalli di 5% (es. 0-5%, 5-10%, ..., 95-100%)
-# tar_intervals = pd.cut(tar_by_paziente['%TARLV2'], bins=range(0, 110, 10), right=False)  #Notazione [0,10) 0 é incluso ma 10 no
+# bins = [0, 1] + list(range(10, 110, 10))
+# tar_intervals = pd.cut(tar_by_paziente['%TARLV2'], bins=bins, right=False)
+# #Notazione [0,10) 0 é incluso ma 10 no
 #
-# # Conteggio dei pazienti per ciascun intervallo
-# pazienti_per_interval = tar_intervals.value_counts().sort_index()
+# # Aggiungiamo colonna per sapere se il paziente ha almeno una diagnosi
+# pazienti_con_diagnosi = set(diagnostics['Patient_ID'])
+# tar_by_paziente['Has_Diagnosis'] = tar_by_paziente['Patient_ID'].isin(pazienti_con_diagnosi)
 #
-# print(pazienti_per_interval)
+# # Aggiungiamo anche gli intervalli nel dataframe
+# tar_by_paziente['Interval'] = tar_intervals
 #
-# # Istogramma del numero di pazienti per ciascun intervallo di %TARLV2
-# plt.figure(figsize=(10, 6))
-# bars = pazienti_per_interval.plot(kind='bar', color='#e64100', edgecolor='black')
+# # Calcoliamo il numero di pazienti CON e SENZA diagnosi per ogni intervallo
+# conta_per_interval = tar_by_paziente.groupby(['Interval', 'Has_Diagnosis']).size().unstack(fill_value=0)
+# conta_per_interval = conta_per_interval.sort_index()
 #
-# for bar in bars.patches:
-#     height = bar.get_height()  # Otteniamo l'altezza della barra (numero di pazienti)
-#     bar.set_edgecolor('black')  # Impostiamo il bordo della barra
-#     bar.set_linewidth(1)  # Impostiamo lo spessore del bordo
-#     plt.text(bar.get_x() + bar.get_width() / 2, height + 0.5, int(height),
-#              ha='center', va='bottom', fontsize=10, color='black')
+# # Istogramma con due barre affiancate per ogni intervallo, con etichette
+# plt.figure(figsize=(12, 6))
+# bar_width = 0.4
+# index = range(len(conta_per_interval))
 #
-# plt.title('')
+# bar1 = plt.bar([i - bar_width/2 for i in index], conta_per_interval[False], width=bar_width, label='Senza Complicanze', color='skyblue', edgecolor='black')
+# bar2 = plt.bar([i + bar_width/2 for i in index], conta_per_interval[True], width=bar_width, label='Con Complicanze', color='lightcoral', edgecolor='black')
+#
+# # Aggiunta delle etichette numeriche sopra ogni barra
+# for bars in [bar1, bar2]:
+#     for bar in bars:
+#         height = bar.get_height()
+#         if height > 0:
+#             plt.text(bar.get_x() + bar.get_width()/2, height + 0.5, str(int(height)), ha='center', va='bottom', fontsize=9)
+#
+#
+# plt.xticks(index, [str(i) for i in conta_per_interval.index], rotation=45)
 # plt.xlabel('%TARLV2')
 # plt.ylabel('Numero di Pazienti')
-# plt.xticks(rotation=45)
+# plt.title('')
+# plt.legend()
 # plt.tight_layout()
 # plt.show()
 #
@@ -709,31 +765,46 @@ df = pd.read_csv("Excel/Glucose_measurements.csv")
 # # Statistiche descrittive di %TBR
 # print(tbr_by_paziente['%TBR'].describe())
 #
-# # Raggruppiamo i valori di %TBR in intervalli di 5% (es. 0-5%, 5-10%, ..., 95-100%)
-# tbr_intervals = pd.cut(tbr_by_paziente['%TBR'], bins=range(0, 110, 10), right=False)  #Notazione [0,10) 0 é incluso ma 10 no
+# bins = [0, 1] + list(range(10, 110, 10))
+# tbr_intervals = pd.cut(tbr_by_paziente['%TBR'], bins=bins, right=False)
+# #Notazione [0,10) 0 é incluso ma 10 no
 #
-# # Conteggio dei pazienti per ciascun intervallo
-# pazienti_per_interval = tbr_intervals.value_counts().sort_index()
+# # Aggiungiamo colonna per sapere se il paziente ha almeno una diagnosi
+# pazienti_con_diagnosi = set(diagnostics['Patient_ID'])
+# tbr_by_paziente['Has_Diagnosis'] = tbr_by_paziente['Patient_ID'].isin(pazienti_con_diagnosi)
 #
-# print(pazienti_per_interval)
+# # Aggiungiamo anche gli intervalli nel dataframe
+# tbr_by_paziente['Interval'] = tbr_intervals
 #
-# # Istogramma del numero di pazienti per ciascun intervallo di %TBR
-# plt.figure(figsize=(10, 6))
-# bars = pazienti_per_interval.plot(kind='bar', color='skyblue', edgecolor='black')
+# # Calcoliamo il numero di pazienti CON e SENZA diagnosi per ogni intervallo
+# conta_per_interval = tbr_by_paziente.groupby(['Interval', 'Has_Diagnosis']).size().unstack(fill_value=0)
+# conta_per_interval = conta_per_interval.sort_index()
 #
-# for bar in bars.patches:
-#     height = bar.get_height()  # Otteniamo l'altezza della barra (numero di pazienti)
-#     bar.set_edgecolor('black')  # Impostiamo il bordo della barra
-#     bar.set_linewidth(1)  # Impostiamo lo spessore del bordo
-#     plt.text(bar.get_x() + bar.get_width() / 2, height + 0.5, int(height),
-#              ha='center', va='bottom', fontsize=10, color='black')
 #
-# plt.title('')
+# # Istogramma con due barre affiancate per ogni intervallo, con etichette
+# plt.figure(figsize=(12, 6))
+# bar_width = 0.4
+# index = range(len(conta_per_interval))
+#
+# bar1 = plt.bar([i - bar_width/2 for i in index], conta_per_interval[False], width=bar_width, label='Senza Complicanze', color='skyblue', edgecolor='black')
+# bar2 = plt.bar([i + bar_width/2 for i in index], conta_per_interval[True], width=bar_width, label='Con Complicanze', color='lightcoral', edgecolor='black')
+#
+# # Aggiunta delle etichette numeriche sopra ogni barra
+# for bars in [bar1, bar2]:
+#     for bar in bars:
+#         height = bar.get_height()
+#         if height > 0:
+#             plt.text(bar.get_x() + bar.get_width()/2, height + 0.5, str(int(height)), ha='center', va='bottom', fontsize=9)
+#
+#
+# plt.xticks(index, [str(i) for i in conta_per_interval.index], rotation=45)
 # plt.xlabel('%TBR')
 # plt.ylabel('Numero di Pazienti')
-# plt.xticks(rotation=45)
+# plt.title('')
+# plt.legend()
 # plt.tight_layout()
 # plt.show()
+#
 #
 #
 # tbr_values = tbr_by_paziente['%TBR']
@@ -802,29 +873,42 @@ df = pd.read_csv("Excel/Glucose_measurements.csv")
 # # Statistiche descrittive di %TBRLV1
 # print(tbr_by_paziente['%TBRLV1'].describe())
 #
-# # Raggruppiamo i valori di %TBRLV1 in intervalli di 5% (es. 0-5%, 5-10%, ..., 95-100%)
-# tbr_intervals = pd.cut(tbr_by_paziente['%TBRLV1'], bins=range(0, 110, 10), right=False)  #Notazione [0,10) 0 é incluso ma 10 no
+# bins = [0, 1] + list(range(10, 110, 10))
+# tbr_intervals = pd.cut(tbr_by_paziente['%TBRLV1'], bins=bins, right=False)
+# #Notazione [0,10) 0 é incluso ma 10 no
 #
-# # Conteggio dei pazienti per ciascun intervallo
-# pazienti_per_interval = tbr_intervals.value_counts().sort_index()
+# # Aggiungiamo colonna per sapere se il paziente ha almeno una diagnosi
+# pazienti_con_diagnosi = set(diagnostics['Patient_ID'])
+# tbr_by_paziente['Has_Diagnosis'] = tbr_by_paziente['Patient_ID'].isin(pazienti_con_diagnosi)
 #
-# print(pazienti_per_interval)
+# # Aggiungiamo anche gli intervalli nel dataframe
+# tbr_by_paziente['Interval'] = tbr_intervals
 #
-# # Istogramma del numero di pazienti per ciascun intervallo di %TBRLV1
-# plt.figure(figsize=(10, 6))
-# bars = pazienti_per_interval.plot(kind='bar', color='#ffa07a', edgecolor='black')
+# # Calcoliamo il numero di pazienti CON e SENZA diagnosi per ogni intervallo
+# conta_per_interval = tbr_by_paziente.groupby(['Interval', 'Has_Diagnosis']).size().unstack(fill_value=0)
+# conta_per_interval = conta_per_interval.sort_index()
 #
-# for bar in bars.patches:
-#     height = bar.get_height()  # Otteniamo l'altezza della barra (numero di pazienti)
-#     bar.set_edgecolor('black')  # Impostiamo il bordo della barra
-#     bar.set_linewidth(1)  # Impostiamo lo spessore del bordo
-#     plt.text(bar.get_x() + bar.get_width() / 2, height + 0.5, int(height),
-#              ha='center', va='bottom', fontsize=10, color='black')
+# # Istogramma con due barre affiancate per ogni intervallo, con etichette
+# plt.figure(figsize=(12, 6))
+# bar_width = 0.4
+# index = range(len(conta_per_interval))
 #
-# plt.title('')
+# bar1 = plt.bar([i - bar_width/2 for i in index], conta_per_interval[False], width=bar_width, label='Senza Complicanze', color='skyblue', edgecolor='black')
+# bar2 = plt.bar([i + bar_width/2 for i in index], conta_per_interval[True], width=bar_width, label='Con Complicanze', color='lightcoral', edgecolor='black')
+#
+# # Aggiunta delle etichette numeriche sopra ogni barra
+# for bars in [bar1, bar2]:
+#     for bar in bars:
+#         height = bar.get_height()
+#         if height > 0:
+#             plt.text(bar.get_x() + bar.get_width()/2, height + 0.5, str(int(height)), ha='center', va='bottom', fontsize=9)
+#
+#
+# plt.xticks(index, [str(i) for i in conta_per_interval.index], rotation=45)
 # plt.xlabel('%TBRLV1')
 # plt.ylabel('Numero di Pazienti')
-# plt.xticks(rotation=45)
+# plt.title('')
+# plt.legend()
 # plt.tight_layout()
 # plt.show()
 #
@@ -895,29 +979,42 @@ df = pd.read_csv("Excel/Glucose_measurements.csv")
 # # Statistiche descrittive di %TBRLV2
 # print(tbr_by_paziente['%TBRLV2'].describe())
 #
-# # Raggruppiamo i valori di %TBRLV2 in intervalli di 5% (es. 0-5%, 5-10%, ..., 95-100%)
-# tbr_intervals = pd.cut(tbr_by_paziente['%TBRLV2'], bins=range(0, 110, 10), right=False)  #Notazione [0,10) 0 é incluso ma 10 no
+# bins = [0, 1] + list(range(10, 110, 10))
+# tbr_intervals = pd.cut(tbr_by_paziente['%TBRLV2'], bins=bins, right=False)
+# #Notazione [0,10) 0 é incluso ma 10 no
 #
-# # Conteggio dei pazienti per ciascun intervallo
-# pazienti_per_interval = tbr_intervals.value_counts().sort_index()
+# # Aggiungiamo colonna per sapere se il paziente ha almeno una diagnosi
+# pazienti_con_diagnosi = set(diagnostics['Patient_ID'])
+# tbr_by_paziente['Has_Diagnosis'] = tbr_by_paziente['Patient_ID'].isin(pazienti_con_diagnosi)
 #
-# print(pazienti_per_interval)
+# # Aggiungiamo anche gli intervalli nel dataframe
+# tbr_by_paziente['Interval'] = tbr_intervals
 #
-# # Istogramma del numero di pazienti per ciascun intervallo di %TBRLV2
-# plt.figure(figsize=(10, 6))
-# bars = pazienti_per_interval.plot(kind='bar', color='#e64100', edgecolor='black')
+# # Calcoliamo il numero di pazienti CON e SENZA diagnosi per ogni intervallo
+# conta_per_interval = tbr_by_paziente.groupby(['Interval', 'Has_Diagnosis']).size().unstack(fill_value=0)
+# conta_per_interval = conta_per_interval.sort_index()
 #
-# for bar in bars.patches:
-#     height = bar.get_height()  # Otteniamo l'altezza della barra (numero di pazienti)
-#     bar.set_edgecolor('black')  # Impostiamo il bordo della barra
-#     bar.set_linewidth(1)  # Impostiamo lo spessore del bordo
-#     plt.text(bar.get_x() + bar.get_width() / 2, height + 0.5, int(height),
-#              ha='center', va='bottom', fontsize=10, color='black')
+# # Istogramma con due barre affiancate per ogni intervallo, con etichette
+# plt.figure(figsize=(12, 6))
+# bar_width = 0.4
+# index = range(len(conta_per_interval))
 #
-# plt.title('')
+# bar1 = plt.bar([i - bar_width/2 for i in index], conta_per_interval[False], width=bar_width, label='Senza Complicanze', color='skyblue', edgecolor='black')
+# bar2 = plt.bar([i + bar_width/2 for i in index], conta_per_interval[True], width=bar_width, label='Con Complicanze', color='lightcoral', edgecolor='black')
+#
+# # Aggiunta delle etichette numeriche sopra ogni barra
+# for bars in [bar1, bar2]:
+#     for bar in bars:
+#         height = bar.get_height()
+#         if height > 0:
+#             plt.text(bar.get_x() + bar.get_width()/2, height + 0.5, str(int(height)), ha='center', va='bottom', fontsize=9)
+#
+#
+# plt.xticks(index, [str(i) for i in conta_per_interval.index], rotation=45)
 # plt.xlabel('%TBRLV2')
 # plt.ylabel('Numero di Pazienti')
-# plt.xticks(rotation=45)
+# plt.title('')
+# plt.legend()
 # plt.tight_layout()
 # plt.show()
 #
@@ -1020,44 +1117,91 @@ df = pd.read_csv("Excel/Glucose_measurements.csv")
 
 #RELAZIONE TRA VALORI DI GLUCOSIO E VALORI DELLE ANALISI FATTE
 
-df2 = pd.read_csv("Excel/glucose_bio_correlated.csv",parse_dates=["Reception_Date"])
 
-# 1) Valore massimo di Parameter_Value
-max_param_value = df2["Parameter_Value"].max()
-# Individua la riga in cui avviene
-row_max_param = df2.loc[df2["Parameter_Value"].idxmax()]
-
-# 2) Valore massimo di Avg_Glucose
-max_avg_glucose = df2["Avg_Glucose"].max()
-# Individua la riga in cui avviene
-row_max_gluc = df2.loc[df2["Avg_Glucose"].idxmax()]
-
-print(f"Massimo Parameter_Value: {max_param_value}")
-print("Record corrispondente:")
-print(row_max_param)
-
-print(f"\nMassimo Avg_Glucose: {max_avg_glucose}")
-print("Record corrispondente:")
-print(row_max_gluc)
-
-params = df2["Parameter"].unique()
-n = len(params)
-cols = 4
-rows = (n + cols - 1) // cols
-
-fig, axes = plt.subplots(rows, cols, figsize=(cols*4, rows*3))
-axes = axes.flatten()
-
-for ax, param in zip(axes, params):
-    sub = df2[df2["Parameter"] == param]
-    ax.scatter(sub["Parameter_Value"], sub["Avg_Glucose"])
-    ax.set_title(param, fontsize=8)
-    ax.set_xlabel("Param value", fontsize=6)
-    ax.set_ylabel("Avg Glucose", fontsize=6)
-
-# elimina assi vuoti
-for ax in axes[n:]:
-    ax.set_visible(False)
-
-plt.tight_layout()
-plt.show()
+# df2 = pd.read_csv("Excel/glucose_bio_correlated.csv", parse_dates=["Reception_Date"])
+# diagnostics = pd.read_csv("Excel/Diagnostics.csv")
+#
+#
+# max_param_value = df2["Parameter_Value"].max()  #Valore massimo
+# row_max_param = df2.loc[df2["Parameter_Value"].idxmax()] #Indice di riga del valore massimo, .loc estrae l'intera riga
+#
+# max_avg_glucose = df2["Avg_Glucose"].max()
+# row_max_gluc = df2.loc[df2["Avg_Glucose"].idxmax()]
+#
+# #Stampa dei valori massimi e relativi indici di riga
+# print(f"Massimo Parameter_Value: {max_param_value}")
+# print("Record corrispondente:")
+# print(row_max_param)
+# print(f"\nMassimo Avg_Glucose: {max_avg_glucose}")
+# print("Record corrispondente:")
+# print(row_max_gluc)
+#
+# #trasforma la colonna Patient_ID di diagnostics in un insieme e crea una nuova colonna di booleani
+# #se il paziente preso in considerazione si trova nel dataset diagnostics allora la nuova colonna Has_Diagnosis diventa True, altrimenti False
+# diagnosed_patients = set(diagnostics["Patient_ID"])
+# df2["Has_Diagnosis"] = df2["Patient_ID"].isin(diagnosed_patients)
+#
+# #Preparazione diagrammi, n indica il numero di diagrammi da stampare (17), e poi vengono messe righe e colonne
+# params = df2["Parameter"].unique()
+# n = len(params)
+# cols = 4
+# rows = (n + cols - 1) // cols
+#
+# #Calcoliamo minimi e massimi dei valori che dobbiamo rappresentare sugli scatterplot, in modo che nelle 3 rappresentazioni differenti
+# #l'asse delle scisse e quella delle ordinate abbia sempre gli stessi valori
+# limits = {}
+# for param in params:
+#     sub = df2[df2["Parameter"] == param]
+#     x_min, x_max = sub["Parameter_Value"].min(), sub["Parameter_Value"].max()
+#     y_min, y_max = sub["Avg_Glucose"].min(), sub["Avg_Glucose"].max()
+#     x_pad = (x_max - x_min) * 0.05
+#     y_pad = (y_max - y_min) * 0.05
+#     limits[param] = {
+#         "xlim": (x_min - x_pad, x_max + x_pad),
+#         "ylim": (y_min - y_pad, y_max + y_pad)
+#     }
+#
+# #Funzione di plot per gruppi, con limiti fissi
+# def plot_group(df_subset, title, blue=True, red=True):
+#     fig, axes = plt.subplots(rows, cols, figsize=(cols*4, rows*3))
+#     axes = axes.flatten()
+#     for ax, param in zip(axes, params):
+#         sub = df_subset[df_subset["Parameter"] == param]
+#         if blue:
+#             ax.scatter(
+#                 sub[~sub["Has_Diagnosis"]]["Parameter_Value"], #Seleziona solo le righe di sub con pazienti senza complicanze
+#                 sub[~sub["Has_Diagnosis"]]["Avg_Glucose"],
+#                 facecolors='none', edgecolors='blue', marker='o',
+#                 linewidths=1, label='No Complicanze'
+#             )
+#         if red:
+#             ax.scatter(
+#                 sub[sub["Has_Diagnosis"]]["Parameter_Value"], #Seleziona solo le righe di sub con pazienti con complicanze
+#                 sub[sub["Has_Diagnosis"]]["Avg_Glucose"],
+#                 facecolors='none', edgecolors='red', marker='o',
+#                 linewidths=1, label='Con Complicanze'
+#             )
+#         # Applica limiti calcolati
+#         ax.set_xlim(limits[param]["xlim"])
+#         ax.set_ylim(limits[param]["ylim"])
+#         ax.set_title(param, fontsize=8)
+#         ax.set_xlabel("Param value", fontsize=6)
+#         ax.set_ylabel("Avg Glucose", fontsize=6)
+#         ax.legend(fontsize=6)
+#     # Nascondi assi in eccesso
+#     for ax in axes[n:]:
+#         ax.set_visible(False)
+#     fig.suptitle(title, fontsize=12, y=1.02)
+#     plt.tight_layout()
+#     return fig
+#
+# #Figura 1: combinato blu+rosso
+# plot_group(df2, "Tutti i pazienti: Con e Senza complicanze", blue=True, red=True)
+#
+# #Figura 2: solo CON diagnosi (rosso)
+# plot_group(df2, "Solo pazienti CON complicanze", blue=False, red=True)
+#
+# #Figura 3: solo SENZA diagnosi (blu)
+# plot_group(df2, "Solo pazienti SENZA complicanze", blue=True, red=False)
+#
+# plt.show()
