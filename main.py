@@ -416,6 +416,60 @@ diagnostics = pd.read_csv("Excel/Diagnostics.csv")
 # print(f"Curtosi (kurtosis): {curtosi:.2f}")
 # print(f"Numero di outlier: {len(outliers)}")
 # print("Moda:", moda.tolist())
+#
+#
+#
+# # 1) Converto Measurement_date in datetime
+# df['Measurement_date'] = pd.to_datetime(df['Measurement_date'])
+#
+# # 2) Calcolo la prima data di misurazione per ogni paziente
+# first_dates = df.groupby('Patient_ID')['Measurement_date'].min().rename('FirstDate')
+# df = df.join(first_dates, on='Patient_ID')
+#
+# # 3) Seleziono misurazioni entro 3 mesi dalla data iniziale
+# df_3m = df[df['Measurement_date'] <= df['FirstDate'] + pd.DateOffset(months=3)]
+#
+# # 4) Calcolo il TIR sui primi 3 mesi
+# pazienti_3m = df_3m.groupby('Patient_ID')
+# tir3m_by_paziente = pazienti_3m.apply(calculate_tir).reset_index(name='%TIR_3m')
+#
+# # 5) Aggiungo il flag di diagnosi
+# tir3m_by_paziente['Has_Diagnosis'] = tir3m_by_paziente['Patient_ID'].isin(pazienti_con_diagnosi)
+#
+# # 6) Creo gli stessi intervalli usati prima su %TIR_3m
+# tir3m_by_paziente['Interval'] = pd.cut(tir3m_by_paziente['%TIR_3m'], bins=bins, right=False)
+#
+# # 7) Raggruppo e conto
+# conta_per_interval_3m = tir3m_by_paziente.groupby(['Interval', 'Has_Diagnosis']).size().unstack(fill_value=0).sort_index()
+#
+# # 8) Disegno l’istogramma a barre affiancate
+# plt.figure(figsize=(12, 6))
+# bar_width = 0.4
+# index_3m = range(len(conta_per_interval_3m))
+#
+# bar1_3m = plt.bar([i - bar_width/2 for i in index_3m], conta_per_interval_3m[False],
+#                    width=bar_width, label='Senza Complicanze', color='skyblue', edgecolor='black')
+# bar2_3m = plt.bar([i + bar_width/2 for i in index_3m], conta_per_interval_3m[True],
+#                    width=bar_width, label='Con Complicanze', color='lightcoral', edgecolor='black')
+#
+# for bars in (bar1_3m, bar2_3m):
+#     for bar in bars:
+#         h = bar.get_height()
+#         if h > 0:
+#             plt.text(bar.get_x() + bar.get_width()/2, h + 0.5, str(int(h)),
+#                      ha='center', va='bottom', fontsize=9)
+#
+# plt.xticks(index_3m, [str(i) for i in conta_per_interval_3m.index], rotation=45)
+# plt.xlabel('%TIR_3m')
+# plt.ylabel('Numero di Pazienti')
+# plt.title('')
+# plt.legend()
+# plt.tight_layout()
+# plt.show()
+#
+# # 9) Statistiche descrittive per %TIR_3m (facoltativo)
+# print(tir3m_by_paziente['%TIR_3m'].describe())
+
 ############################################################################################
 
 # ANALISI TAR
@@ -629,6 +683,58 @@ diagnostics = pd.read_csv("Excel/Diagnostics.csv")
 # print(f"Curtosi (kurtosis): {curtosi:.2f}")
 # print(f"Numero di outlier: {len(outliers)}")
 # print("Moda:", moda.tolist())
+#
+#
+# # 1) Converto Measurement_date in datetime
+# df['Measurement_date'] = pd.to_datetime(df['Measurement_date'])
+#
+# # 2) Calcolo la prima data di misurazione per ogni paziente
+# first_dates = df.groupby('Patient_ID')['Measurement_date'].min().rename('FirstDate')
+# df = df.join(first_dates, on='Patient_ID')
+#
+# # 3) Seleziono misurazioni entro 3 mesi dalla data iniziale
+# df_3m = df[df['Measurement_date'] <= df['FirstDate'] + pd.DateOffset(months=3)]
+#
+# # 4) Calcolo il TIR sui primi 3 mesi
+# pazienti_3m = df_3m.groupby('Patient_ID')
+# tar3m_by_paziente = pazienti_3m.apply(calculate_tar).reset_index(name='%TARLV1_3m')
+#
+# # 5) Aggiungo il flag di diagnosi
+# tar3m_by_paziente['Has_Diagnosis'] = tar3m_by_paziente['Patient_ID'].isin(pazienti_con_diagnosi)
+#
+# # 6) Creo gli stessi intervalli usati prima su %TIR_3m
+# tar3m_by_paziente['Interval'] = pd.cut(tar3m_by_paziente['%TARLV1_3m'], bins=bins, right=False)
+#
+# # 7) Raggruppo e conto
+# conta_per_interval_3m = tar3m_by_paziente.groupby(['Interval', 'Has_Diagnosis']).size().unstack(fill_value=0).sort_index()
+#
+# # 8) Disegno l’istogramma a barre affiancate
+# plt.figure(figsize=(12, 6))
+# bar_width = 0.4
+# index_3m = range(len(conta_per_interval_3m))
+#
+# bar1_3m = plt.bar([i - bar_width/2 for i in index_3m], conta_per_interval_3m[False],
+#                    width=bar_width, label='Senza Complicanze', color='skyblue', edgecolor='black')
+# bar2_3m = plt.bar([i + bar_width/2 for i in index_3m], conta_per_interval_3m[True],
+#                    width=bar_width, label='Con Complicanze', color='lightcoral', edgecolor='black')
+#
+# for bars in (bar1_3m, bar2_3m):
+#     for bar in bars:
+#         h = bar.get_height()
+#         if h > 0:
+#             plt.text(bar.get_x() + bar.get_width()/2, h + 0.5, str(int(h)),
+#                      ha='center', va='bottom', fontsize=9)
+#
+# plt.xticks(index_3m, [str(i) for i in conta_per_interval_3m.index], rotation=45)
+# plt.xlabel('%TARLV1_3m')
+# plt.ylabel('Numero di Pazienti')
+# plt.title('')
+# plt.legend()
+# plt.tight_layout()
+# plt.show()
+#
+# # 9) Statistiche descrittive per %TIR_3m (facoltativo)
+# print(tar3m_by_paziente['%TARLV1_3m'].describe())
 ############################################################################################
 
 
@@ -735,6 +841,58 @@ diagnostics = pd.read_csv("Excel/Diagnostics.csv")
 # print(f"Curtosi (kurtosis): {curtosi:.2f}")
 # print(f"Numero di outlier: {len(outliers)}")
 # print("Moda:", moda.tolist())
+#
+#
+# # 1) Converto Measurement_date in datetime
+# df['Measurement_date'] = pd.to_datetime(df['Measurement_date'])
+#
+# # 2) Calcolo la prima data di misurazione per ogni paziente
+# first_dates = df.groupby('Patient_ID')['Measurement_date'].min().rename('FirstDate')
+# df = df.join(first_dates, on='Patient_ID')
+#
+# # 3) Seleziono misurazioni entro 3 mesi dalla data iniziale
+# df_3m = df[df['Measurement_date'] <= df['FirstDate'] + pd.DateOffset(months=3)]
+#
+# # 4) Calcolo il TIR sui primi 3 mesi
+# pazienti_3m = df_3m.groupby('Patient_ID')
+# tar3m_by_paziente = pazienti_3m.apply(calculate_tar).reset_index(name='%TARLV2_3m')
+#
+# # 5) Aggiungo il flag di diagnosi
+# tar3m_by_paziente['Has_Diagnosis'] = tar3m_by_paziente['Patient_ID'].isin(pazienti_con_diagnosi)
+#
+# # 6) Creo gli stessi intervalli usati prima su %TIR_3m
+# tar3m_by_paziente['Interval'] = pd.cut(tar3m_by_paziente['%TARLV2_3m'], bins=bins, right=False)
+#
+# # 7) Raggruppo e conto
+# conta_per_interval_3m = tar3m_by_paziente.groupby(['Interval', 'Has_Diagnosis']).size().unstack(fill_value=0).sort_index()
+#
+# # 8) Disegno l’istogramma a barre affiancate
+# plt.figure(figsize=(12, 6))
+# bar_width = 0.4
+# index_3m = range(len(conta_per_interval_3m))
+#
+# bar1_3m = plt.bar([i - bar_width/2 for i in index_3m], conta_per_interval_3m[False],
+#                    width=bar_width, label='Senza Complicanze', color='skyblue', edgecolor='black')
+# bar2_3m = plt.bar([i + bar_width/2 for i in index_3m], conta_per_interval_3m[True],
+#                    width=bar_width, label='Con Complicanze', color='lightcoral', edgecolor='black')
+#
+# for bars in (bar1_3m, bar2_3m):
+#     for bar in bars:
+#         h = bar.get_height()
+#         if h > 0:
+#             plt.text(bar.get_x() + bar.get_width()/2, h + 0.5, str(int(h)),
+#                      ha='center', va='bottom', fontsize=9)
+#
+# plt.xticks(index_3m, [str(i) for i in conta_per_interval_3m.index], rotation=45)
+# plt.xlabel('%TARLV2_3m')
+# plt.ylabel('Numero di Pazienti')
+# plt.title('')
+# plt.legend()
+# plt.tight_layout()
+# plt.show()
+#
+# # 9) Statistiche descrittive per %TIR_3m (facoltativo)
+# print(tar3m_by_paziente['%TARLV2_3m'].describe())
 ############################################################################################
 
 
@@ -949,6 +1107,59 @@ diagnostics = pd.read_csv("Excel/Diagnostics.csv")
 # print(f"Curtosi (kurtosis): {curtosi:.2f}")
 # print(f"Numero di outlier: {len(outliers)}")
 # print("Moda:", moda.tolist())
+#
+#
+#
+# # 1) Converto Measurement_date in datetime
+# df['Measurement_date'] = pd.to_datetime(df['Measurement_date'])
+#
+# # 2) Calcolo la prima data di misurazione per ogni paziente
+# first_dates = df.groupby('Patient_ID')['Measurement_date'].min().rename('FirstDate')
+# df = df.join(first_dates, on='Patient_ID')
+#
+# # 3) Seleziono misurazioni entro 3 mesi dalla data iniziale
+# df_3m = df[df['Measurement_date'] <= df['FirstDate'] + pd.DateOffset(months=3)]
+#
+# # 4) Calcolo il TIR sui primi 3 mesi
+# pazienti_3m = df_3m.groupby('Patient_ID')
+# tbr3m_by_paziente = pazienti_3m.apply(calculate_tbr).reset_index(name='%TBRLV1_3m')
+#
+# # 5) Aggiungo il flag di diagnosi
+# tbr3m_by_paziente['Has_Diagnosis'] = tbr3m_by_paziente['Patient_ID'].isin(pazienti_con_diagnosi)
+#
+# # 6) Creo gli stessi intervalli usati prima su %TIR_3m
+# tbr3m_by_paziente['Interval'] = pd.cut(tbr3m_by_paziente['%TBRLV1_3m'], bins=bins, right=False)
+#
+# # 7) Raggruppo e conto
+# conta_per_interval_3m = tbr3m_by_paziente.groupby(['Interval', 'Has_Diagnosis']).size().unstack(fill_value=0).sort_index()
+#
+# # 8) Disegno l’istogramma a barre affiancate
+# plt.figure(figsize=(12, 6))
+# bar_width = 0.4
+# index_3m = range(len(conta_per_interval_3m))
+#
+# bar1_3m = plt.bar([i - bar_width/2 for i in index_3m], conta_per_interval_3m[False],
+#                    width=bar_width, label='Senza Complicanze', color='skyblue', edgecolor='black')
+# bar2_3m = plt.bar([i + bar_width/2 for i in index_3m], conta_per_interval_3m[True],
+#                    width=bar_width, label='Con Complicanze', color='lightcoral', edgecolor='black')
+#
+# for bars in (bar1_3m, bar2_3m):
+#     for bar in bars:
+#         h = bar.get_height()
+#         if h > 0:
+#             plt.text(bar.get_x() + bar.get_width()/2, h + 0.5, str(int(h)),
+#                      ha='center', va='bottom', fontsize=9)
+#
+# plt.xticks(index_3m, [str(i) for i in conta_per_interval_3m.index], rotation=45)
+# plt.xlabel('%TBRLV1_3m')
+# plt.ylabel('Numero di Pazienti')
+# plt.title('')
+# plt.legend()
+# plt.tight_layout()
+# plt.show()
+#
+# # 9) Statistiche descrittive per %TIR_3m (facoltativo)
+# print(tbr3m_by_paziente['%TBRLV1_3m'].describe())
 ############################################################################################
 
 
@@ -1055,6 +1266,59 @@ diagnostics = pd.read_csv("Excel/Diagnostics.csv")
 # print(f"Curtosi (kurtosis): {curtosi:.2f}")
 # print(f"Numero di outlier: {len(outliers)}")
 # print("Moda:", moda.tolist())
+#
+#
+#
+# # 1) Converto Measurement_date in datetime
+# df['Measurement_date'] = pd.to_datetime(df['Measurement_date'])
+#
+# # 2) Calcolo la prima data di misurazione per ogni paziente
+# first_dates = df.groupby('Patient_ID')['Measurement_date'].min().rename('FirstDate')
+# df = df.join(first_dates, on='Patient_ID')
+#
+# # 3) Seleziono misurazioni entro 3 mesi dalla data iniziale
+# df_3m = df[df['Measurement_date'] <= df['FirstDate'] + pd.DateOffset(months=3)]
+#
+# # 4) Calcolo il TIR sui primi 3 mesi
+# pazienti_3m = df_3m.groupby('Patient_ID')
+# tbr3m_by_paziente = pazienti_3m.apply(calculate_tbr).reset_index(name='%TBRLV2_3m')
+#
+# # 5) Aggiungo il flag di diagnosi
+# tbr3m_by_paziente['Has_Diagnosis'] = tbr3m_by_paziente['Patient_ID'].isin(pazienti_con_diagnosi)
+#
+# # 6) Creo gli stessi intervalli usati prima su %TIR_3m
+# tbr3m_by_paziente['Interval'] = pd.cut(tbr3m_by_paziente['%TBRLV2_3m'], bins=bins, right=False)
+#
+# # 7) Raggruppo e conto
+# conta_per_interval_3m = tbr3m_by_paziente.groupby(['Interval', 'Has_Diagnosis']).size().unstack(fill_value=0).sort_index()
+#
+# # 8) Disegno l’istogramma a barre affiancate
+# plt.figure(figsize=(12, 6))
+# bar_width = 0.4
+# index_3m = range(len(conta_per_interval_3m))
+#
+# bar1_3m = plt.bar([i - bar_width/2 for i in index_3m], conta_per_interval_3m[False],
+#                    width=bar_width, label='Senza Complicanze', color='skyblue', edgecolor='black')
+# bar2_3m = plt.bar([i + bar_width/2 for i in index_3m], conta_per_interval_3m[True],
+#                    width=bar_width, label='Con Complicanze', color='lightcoral', edgecolor='black')
+#
+# for bars in (bar1_3m, bar2_3m):
+#     for bar in bars:
+#         h = bar.get_height()
+#         if h > 0:
+#             plt.text(bar.get_x() + bar.get_width()/2, h + 0.5, str(int(h)),
+#                      ha='center', va='bottom', fontsize=9)
+#
+# plt.xticks(index_3m, [str(i) for i in conta_per_interval_3m.index], rotation=45)
+# plt.xlabel('%TBRLV2_3m')
+# plt.ylabel('Numero di Pazienti')
+# plt.title('')
+# plt.legend()
+# plt.tight_layout()
+# plt.show()
+#
+# # 9) Statistiche descrittive per %TIR_3m (facoltativo)
+# print(tbr3m_by_paziente['%TBRLV2_3m'].describe())
 ############################################################################################
 
 
@@ -1074,25 +1338,29 @@ diagnostics = pd.read_csv("Excel/Diagnostics.csv")
 # common_patients = set(df_bio['Patient_ID']).intersection(set(df_glucose['Patient_ID']))
 #
 # # Loop per paziente
-# for pid in tqdm(common_patients):
-#     glucose_p = df_glucose[df_glucose['Patient_ID'] == pid].copy()
+# for pid in tqdm(common_patients): #per ogni paziente in comune, mostrando la barra di avanzamento
+#     glucose_p = df_glucose[df_glucose['Patient_ID'] == pid].copy() #prendi tutte le righe di glucosio e di parametri biochimici per quel paziente
 #     bio_p = df_bio[df_bio['Patient_ID'] == pid].copy()
 #
-#     # Ordina per efficienza (opzionale)
+#     # Ordina le misurazioni di glucosio cronologicamente
 #     glucose_p.sort_values("Measurement_date", inplace=True)
 #
+#     #per ogni parametro biochimico del paziente estrae la data ed il valore
 #     for _, bio_row in bio_p.iterrows():
 #         reception_date = bio_row["Reception_date"]
 #         param_name = bio_row["Name"]
 #         param_value = bio_row["Value"]
 #
-#         # Trova misurazioni entro ±3 giorni
+#         # Trova misurazioni di glucosio entro ±3 giorni
+#         # Costruisce una mask che é TRUE per tutte le righe in glucose_p la cui data é compresa entro 3 giorni da reception_date di bio_p
 #         mask = (
 #                 (glucose_p["Measurement_date"] >= reception_date - timedelta(days=3)) &
 #                 (glucose_p["Measurement_date"] <= reception_date + timedelta(days=3))
 #         )
+#         #crea un sotto-dataset contenente solo le letture di glucosio che rispettano la mashera, cioe l'intervallo di 3 giorni
 #         nearby = glucose_p[mask]
 #
+#         #se il dataframe creato non é vuoto si aggiunge un dizionario contenente gli altri parametri
 #         if not nearby.empty:
 #             records.append({
 #                 "Patient_ID": pid,
@@ -1111,97 +1379,253 @@ diagnostics = pd.read_csv("Excel/Diagnostics.csv")
 # df_results.to_csv(output_path, index=False)
 #
 # print(f"Saved {len(df_results)} rows to {output_path}")
-
 ############################################################################################
 
 
-#RELAZIONE TRA VALORI DI GLUCOSIO E VALORI DELLE ANALISI FATTE
+#SCATTERPLOT - RELAZIONE TRA VALORI DI GLUCOSIO E VALORI DELLE ANALISI FATTE
+############################################################################################
+df2 = pd.read_csv("Excel/glucose_bio_correlated.csv", parse_dates=["Reception_Date"])
+diagnostics = pd.read_csv("Excel/Diagnostics.csv")
+
+max_param_value = df2["Parameter_Value"].max()  #Valore massimo
+row_max_param = df2.loc[df2["Parameter_Value"].idxmax()] #Indice di riga del valore massimo, .loc estrae l'intera riga
+
+max_avg_glucose = df2["Avg_Glucose"].max()
+row_max_gluc = df2.loc[df2["Avg_Glucose"].idxmax()]
+
+#Stampa dei valori massimi e relativi indici di riga
+print(f"Massimo Parameter_Value: {max_param_value}")
+print("Record corrispondente:")
+print(row_max_param)
+print(f"\nMassimo Avg_Glucose: {max_avg_glucose}")
+print("Record corrispondente:")
+print(row_max_gluc)
+
+# trasforma la colonna Patient_ID di diagnostics in un insieme e crea una nuova colonna di booleani
+# se il paziente preso in considerazione si trova nel dataset diagnostics allora la nuova colonna Has_Diagnosis diventa True, altrimenti False
+diagnosed_patients = set(diagnostics["Patient_ID"])
+df2["Has_Diagnosis"] = df2["Patient_ID"].isin(diagnosed_patients)
+
+#Preparazione diagrammi, n indica il numero di diagrammi da stampare (17), e poi vengono messe righe e colonne
+params = df2["Parameter"].unique()
+n = len(params)
+cols = 4
+rows = (n + cols - 1) // cols
+
+#Calcoliamo minimi e massimi dei valori che dobbiamo rappresentare sugli scatterplot, in modo che nelle 3 rappresentazioni differenti
+#l'asse delle scisse e quella delle ordinate abbia sempre gli stessi valori
+limits = {}
+for param in params:
+    sub = df2[df2["Parameter"] == param]
+    x_min, x_max = sub["Parameter_Value"].min(), sub["Parameter_Value"].max()
+    y_min, y_max = sub["Avg_Glucose"].min(), sub["Avg_Glucose"].max()
+    x_pad = (x_max - x_min) * 0.05
+    y_pad = (y_max - y_min) * 0.05
+    limits[param] = {
+        "xlim": (x_min - x_pad, x_max + x_pad),
+        "ylim": (y_min - y_pad, y_max + y_pad)
+    }
+
+#Funzione di plot per gruppi, con limiti fissi
+def plot_group(df_subset, title, blue=True, red=True):
+    fig, axes = plt.subplots(rows, cols, figsize=(cols*4, rows*3))
+    axes = axes.flatten()
+    for ax, param in zip(axes, params):
+        sub = df_subset[df_subset["Parameter"] == param]
+        if blue:
+            ax.scatter(
+                sub[~sub["Has_Diagnosis"]]["Parameter_Value"], #Seleziona solo le righe di sub con pazienti senza complicanze
+                sub[~sub["Has_Diagnosis"]]["Avg_Glucose"],
+                facecolors='none', edgecolors='blue', marker='o',
+                linewidths=1, label='No Complicanze'
+            )
+        if red:
+            ax.scatter(
+                sub[sub["Has_Diagnosis"]]["Parameter_Value"], #Seleziona solo le righe di sub con pazienti con complicanze
+                sub[sub["Has_Diagnosis"]]["Avg_Glucose"],
+                facecolors='none', edgecolors='red', marker='o',
+                linewidths=1, label='Con Complicanze'
+            )
+        # Applica limiti calcolati
+        ax.set_xlim(limits[param]["xlim"])
+        ax.set_ylim(limits[param]["ylim"])
+        ax.set_title(param, fontsize=8)
+        ax.set_xlabel("Param value", fontsize=6)
+        ax.set_ylabel("Avg Glucose", fontsize=6)
+        ax.legend(fontsize=6)
+    # Nascondi assi in eccesso
+    for ax in axes[n:]:
+        ax.set_visible(False)
+    fig.suptitle(title, fontsize=12, y=1.02)
+    plt.tight_layout()
+    return fig
+
+#Figura 1: combinato blu+rosso
+plot_group(df2, "Tutti i pazienti: Con e Senza complicanze", blue=True, red=True)
+
+#Figura 2: solo CON diagnosi (rosso)
+plot_group(df2, "Solo pazienti CON complicanze", blue=False, red=True)
+
+#Figura 3: solo SENZA diagnosi (blu)
+plot_group(df2, "Solo pazienti SENZA complicanze", blue=True, red=False)
+
+plt.show()
+
+#BOXPLOT - RELAZIONE TRA VALORI DI GLUCOSIO E VALORI DELLE ANALISI FATTE
+############################################################################################
+params = df2["Parameter"].unique()
+n = len(params)
+
+cols = 4
+rows = (n + cols - 1) // cols
+
+fig, axes = plt.subplots(rows, cols, figsize=(cols * 5, rows * 4))
+axes = axes.flatten()
+
+for i, param in enumerate(params):
+    sub = df2[df2["Parameter"] == param]
+    data_to_plot = [
+        sub[sub["Has_Diagnosis"] == False]["Parameter_Value"],
+        sub[sub["Has_Diagnosis"] == True]["Parameter_Value"]
+    ]
+    axes[i].boxplot(
+        data_to_plot,
+        tick_labels=["Senza", "Con"],
+        patch_artist=True,
+        boxprops=dict(facecolor='lightblue'),
+        medianprops=dict(color='red')
+    )
+    axes[i].set_title(param, fontsize=9)
+    axes[i].set_ylabel("Valore parametro", fontsize=8)
+
+# Nasconde eventuali assi vuoti
+for ax in axes[n:]:
+    ax.set_visible(False)
+
+fig.suptitle(
+    "Boxplot per ciascun parametro biochimico (Con vs Senza complicanze)",
+    fontsize=14, y=1.02
+)
+
+# Regola lo spacing verticale
+fig.subplots_adjust(hspace=0.6)
+
+# Assicura lo stesso comportamento del secondo blocco
+plt.tight_layout()
+
+plt.show()
 
 
-# df2 = pd.read_csv("Excel/glucose_bio_correlated.csv", parse_dates=["Reception_Date"])
-# diagnostics = pd.read_csv("Excel/Diagnostics.csv")
-#
-#
-# max_param_value = df2["Parameter_Value"].max()  #Valore massimo
-# row_max_param = df2.loc[df2["Parameter_Value"].idxmax()] #Indice di riga del valore massimo, .loc estrae l'intera riga
-#
-# max_avg_glucose = df2["Avg_Glucose"].max()
-# row_max_gluc = df2.loc[df2["Avg_Glucose"].idxmax()]
-#
-# #Stampa dei valori massimi e relativi indici di riga
-# print(f"Massimo Parameter_Value: {max_param_value}")
-# print("Record corrispondente:")
-# print(row_max_param)
-# print(f"\nMassimo Avg_Glucose: {max_avg_glucose}")
-# print("Record corrispondente:")
-# print(row_max_gluc)
-#
-# #trasforma la colonna Patient_ID di diagnostics in un insieme e crea una nuova colonna di booleani
-# #se il paziente preso in considerazione si trova nel dataset diagnostics allora la nuova colonna Has_Diagnosis diventa True, altrimenti False
-# diagnosed_patients = set(diagnostics["Patient_ID"])
-# df2["Has_Diagnosis"] = df2["Patient_ID"].isin(diagnosed_patients)
-#
-# #Preparazione diagrammi, n indica il numero di diagrammi da stampare (17), e poi vengono messe righe e colonne
-# params = df2["Parameter"].unique()
-# n = len(params)
-# cols = 4
-# rows = (n + cols - 1) // cols
-#
-# #Calcoliamo minimi e massimi dei valori che dobbiamo rappresentare sugli scatterplot, in modo che nelle 3 rappresentazioni differenti
-# #l'asse delle scisse e quella delle ordinate abbia sempre gli stessi valori
-# limits = {}
-# for param in params:
-#     sub = df2[df2["Parameter"] == param]
-#     x_min, x_max = sub["Parameter_Value"].min(), sub["Parameter_Value"].max()
-#     y_min, y_max = sub["Avg_Glucose"].min(), sub["Avg_Glucose"].max()
-#     x_pad = (x_max - x_min) * 0.05
-#     y_pad = (y_max - y_min) * 0.05
-#     limits[param] = {
-#         "xlim": (x_min - x_pad, x_max + x_pad),
-#         "ylim": (y_min - y_pad, y_max + y_pad)
-#     }
-#
-# #Funzione di plot per gruppi, con limiti fissi
-# def plot_group(df_subset, title, blue=True, red=True):
-#     fig, axes = plt.subplots(rows, cols, figsize=(cols*4, rows*3))
-#     axes = axes.flatten()
-#     for ax, param in zip(axes, params):
-#         sub = df_subset[df_subset["Parameter"] == param]
-#         if blue:
-#             ax.scatter(
-#                 sub[~sub["Has_Diagnosis"]]["Parameter_Value"], #Seleziona solo le righe di sub con pazienti senza complicanze
-#                 sub[~sub["Has_Diagnosis"]]["Avg_Glucose"],
-#                 facecolors='none', edgecolors='blue', marker='o',
-#                 linewidths=1, label='No Complicanze'
-#             )
-#         if red:
-#             ax.scatter(
-#                 sub[sub["Has_Diagnosis"]]["Parameter_Value"], #Seleziona solo le righe di sub con pazienti con complicanze
-#                 sub[sub["Has_Diagnosis"]]["Avg_Glucose"],
-#                 facecolors='none', edgecolors='red', marker='o',
-#                 linewidths=1, label='Con Complicanze'
-#             )
-#         # Applica limiti calcolati
-#         ax.set_xlim(limits[param]["xlim"])
-#         ax.set_ylim(limits[param]["ylim"])
-#         ax.set_title(param, fontsize=8)
-#         ax.set_xlabel("Param value", fontsize=6)
-#         ax.set_ylabel("Avg Glucose", fontsize=6)
-#         ax.legend(fontsize=6)
-#     # Nascondi assi in eccesso
-#     for ax in axes[n:]:
-#         ax.set_visible(False)
-#     fig.suptitle(title, fontsize=12, y=1.02)
-#     plt.tight_layout()
-#     return fig
-#
-# #Figura 1: combinato blu+rosso
-# plot_group(df2, "Tutti i pazienti: Con e Senza complicanze", blue=True, red=True)
-#
-# #Figura 2: solo CON diagnosi (rosso)
-# plot_group(df2, "Solo pazienti CON complicanze", blue=False, red=True)
-#
-# #Figura 3: solo SENZA diagnosi (blu)
-# plot_group(df2, "Solo pazienti SENZA complicanze", blue=True, red=False)
-#
-# plt.show()
+
+
+
+#BOX PLOT SESSO
+########################################
+# 1) Leggi il file con le informazioni di sesso
+patient_info = pd.read_csv("Excel/Patient_info.csv")  # contiene Patient_ID e Sex (M/F)
+
+# 2) Fai il merge con df2
+df2 = df2.merge(patient_info[['Patient_ID', 'Sex']], on='Patient_ID', how='left')
+
+# 3) Mappa M/F in etichette italiane
+df2['Sex_label'] = df2['Sex'].map({'M': 'Maschio', 'F': 'Femmina'})
+
+# 4) Prepara parametri e dimensioni della griglia
+params = df2["Parameter"].unique()
+n = len(params)
+cols = 4
+rows = (n + cols - 1) // cols
+
+# 5) Crea la figura e gli assi
+fig, axes = plt.subplots(rows, cols, figsize=(cols * 5, rows * 4))
+axes = axes.flatten()
+
+# 6) Per ciascun parametro, disegna il boxplot Maschio vs Femmina
+for i, param in enumerate(params):
+    sub = df2[df2["Parameter"] == param]
+    data_to_plot = [
+        sub[sub["Sex_label"] == "Maschio"]["Parameter_Value"],
+        sub[sub["Sex_label"] == "Femmina"]["Parameter_Value"]
+    ]
+    axes[i].boxplot(
+        data_to_plot,
+        tick_labels=["Maschio", "Femmina"],
+        patch_artist=True,
+        boxprops=dict(facecolor='lightblue'),
+        medianprops=dict(color='red')
+    )
+    axes[i].set_title(param, fontsize=9)
+    axes[i].set_ylabel("Valore parametro", fontsize=8)
+
+# 7) Nascondi eventuali assi vuoti
+for ax in axes[n:]:
+    ax.set_visible(False)
+
+# 8) Titolo e spacing verticale
+fig.suptitle(
+    "Boxplot per ciascun parametro biochimico (Maschio vs Femmina)",
+    fontsize=14, y=1.02
+)
+fig.subplots_adjust(hspace=0.6)
+
+# 9) Mostra
+plt.tight_layout()
+plt.show()
+
+#BOX PLOT ETA
+########################################
+# --- 1) Calcola l'età al 2025 basandoti sul Birth_year ---
+current_year = 2025
+patient_info['Age'] = current_year - patient_info['Birth_year']
+
+# --- 2) Definisci le fasce d'età ---
+bins = [0, 30, 50, 70, 120]
+labels = ['<30', '30–49', '50–69', '≥70']
+patient_info['Age_group'] = pd.cut(patient_info['Age'], bins=bins, labels=labels, right=False)
+
+# --- 3) Associa le fasce d'età a df2 (merge se non già fatto) ---
+df2 = df2.merge(patient_info[['Patient_ID', 'Age_group']], on='Patient_ID', how='left')
+
+# --- 4) Prepara parametri e dimensioni della griglia ---
+params = df2["Parameter"].unique()
+n = len(params)
+cols = 4
+rows = (n + cols - 1) // cols
+
+# --- 5) Crea la figura e gli assi ---
+fig, axes = plt.subplots(rows, cols, figsize=(cols * 5, rows * 4))
+axes = axes.flatten()
+
+# --- 6) Disegna i boxplot per ciascuna fascia d'età ---
+for i, param in enumerate(params):
+    sub = df2[df2["Parameter"] == param]
+    data_to_plot = [sub[sub["Age_group"] == grp]["Parameter_Value"] for grp in labels]
+
+    axes[i].boxplot(
+        data_to_plot,
+        tick_labels=labels,
+        patch_artist=True,
+        boxprops=dict(facecolor='lightblue'),
+        medianprops=dict(color='red')
+    )
+    axes[i].set_title(param, fontsize=9)
+    axes[i].set_ylabel("Valore parametro", fontsize=8)
+
+# --- 7) Nascondi eventuali assi vuoti ---
+for ax in axes[n:]:
+    ax.set_visible(False)
+
+# --- 8) Titolo e spacing verticale ---
+fig.suptitle(
+    "Boxplot per ciascun parametro biochimico\nsuddivisi per fasce di età",
+    fontsize=14, y=1.02
+)
+fig.subplots_adjust(hspace=0.6)
+
+# --- 9) Allinea il layout esattamente come negli altri plot ---
+plt.tight_layout()
+
+# --- 10) Mostra la figura ---
+plt.show()
+
+############################################################################################
