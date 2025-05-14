@@ -1360,7 +1360,7 @@ diagnostics = pd.read_csv("Excel/Diagnostics.csv")
 #         #crea un sotto-dataset contenente solo le letture di glucosio che rispettano la mashera, cioe l'intervallo di 3 giorni
 #         nearby = glucose_p[mask]
 #
-#         #se il dataframe creato non é vuoto si aggiunge un dizionario contenente gli altri parametri
+#         #se il dataframe creato non é vuoto si aggiungono anche gli altri parametri e si fa l'append di questo a records definito prima
 #         if not nearby.empty:
 #             records.append({
 #                 "Patient_ID": pid,
