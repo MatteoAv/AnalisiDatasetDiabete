@@ -401,8 +401,8 @@ diagnostics = pd.read_csv("Excel/Diagnostics.csv")
 #
 # print(f"U-statistic = {u_stat:.2f}")
 # print(f"p-value      = {p_value:.4f}")
-
-
+#
+#
 # # STATISTICHE DESCRITTIVE
 # tir_values = tir_by_paziente['%TIR']
 #
@@ -921,119 +921,119 @@ diagnostics = pd.read_csv("Excel/Diagnostics.csv")
 
 # ANALISI TBR
 ############################################################################################
-# Funzione per calcolare il TBR di un paziente
-def calculate_tbr(misurazioni): # Prende in ingresso l'insieme di misurazioni di un singolo paziente
-    totale = len(misurazioni)   # Calcola il numero totale di misurazioni del paziente
-    righe_valide = misurazioni[(misurazioni['Measurement'] < 70)] # Seleziona solo le righe che nel campo Measurement hanno un valore minore di 70 mg/dL
-    tbr = len(righe_valide)/totale * 100 # Calcola il %TBR facendo Misurazioni Valide/Misurazioni Totali
-    return tbr
-
-pazienti = df.groupby('Patient_ID') # Dividiamo il dataset per paziente, ogni gruppo contiene le misurazioni di un singolo paziente
-tbr_by_paziente = pazienti.apply(calculate_tbr).reset_index(name='%TBR') # Calcoliamo il TBR di ogni paziente e creiamo un nuovo dataset con 2 colonne: Ptient_ID e %TBR
-# tbr_by_paziente = tbr_by_paziente.sort_values(by='%TBR', ascending=False)
-print(tbr_by_paziente)
-
-# Grafico per la percentuale di ogni paziente
-plt.figure(figsize=(14, 6))
-plt.bar(tbr_by_paziente['Patient_ID'], tbr_by_paziente['%TBR'], color='skyblue')
-plt.xticks([])
-plt.ylabel('% Time Below Range (< 70 mg/dL)')
-plt.xlabel('Pazienti')
-plt.title('')
-plt.tight_layout()
-plt.show()
-
-# Statistiche descrittive di %TBR
-print(tbr_by_paziente['%TBR'].describe())
-
-bins = [0, 1] + list(range(10, 110, 10))
-tbr_intervals = pd.cut(tbr_by_paziente['%TBR'], bins=bins, right=False)
-#Notazione [0,10) 0 é incluso ma 10 no
-
-# Aggiungiamo colonna per sapere se il paziente ha almeno una diagnosi
-pazienti_con_diagnosi = set(diagnostics['Patient_ID'])
-tbr_by_paziente['Has_Diagnosis'] = tbr_by_paziente['Patient_ID'].isin(pazienti_con_diagnosi)
-
-# Aggiungiamo anche gli intervalli nel dataframe
-tbr_by_paziente['Interval'] = tbr_intervals
-
-# Calcoliamo il numero di pazienti CON e SENZA diagnosi per ogni intervallo
-conta_per_interval = tbr_by_paziente.groupby(['Interval', 'Has_Diagnosis']).size().unstack(fill_value=0)
-conta_per_interval = conta_per_interval.sort_index()
-
-
-# Istogramma con due barre affiancate per ogni intervallo, con etichette
-plt.figure(figsize=(12, 6))
-bar_width = 0.4
-index = range(len(conta_per_interval))
-
-bar1 = plt.bar([i - bar_width/2 for i in index], conta_per_interval[False], width=bar_width, label='Senza Complicanze', color='skyblue', edgecolor='black')
-bar2 = plt.bar([i + bar_width/2 for i in index], conta_per_interval[True], width=bar_width, label='Con Complicanze', color='lightcoral', edgecolor='black')
-
-# Aggiunta delle etichette numeriche sopra ogni barra
-for bars in [bar1, bar2]:
-    for bar in bars:
-        height = bar.get_height()
-        if height > 0:
-            plt.text(bar.get_x() + bar.get_width()/2, height + 0.5, str(int(height)), ha='center', va='bottom', fontsize=9)
-
-
-plt.xticks(index, [str(i) for i in conta_per_interval.index], rotation=45)
-plt.xlabel('%TBR')
-plt.ylabel('Numero di Pazienti')
-plt.title('')
-plt.legend()
-plt.tight_layout()
-plt.show()
-
-
-
-tbr_values = tbr_by_paziente['%TBR']
-
-# Statistiche descrittive
-media = tbr_values.mean()
-mediana = tbr_values.median()
-asimmetria = skew(tbr_values) #skewness
-curtosi = kurtosis(tbr_values)
-
-tar_arrotondato = tbr_values.round()
-moda = tar_arrotondato.mode()
-
-# Outlier con metodo IQR (Interquartile Range)
-# calcola Q1, Q3 e IQR
-q1 = tbr_values.quantile(0.25)
-q3 = tbr_values.quantile(0.75)
-iqr = q3 - q1
-
-# soglie per outlier
-lower_thr = q1 - 1.5 * iqr
-upper_thr = q3 + 1.5 * iqr
-
-print(f"Q1 = {q1:.2f}%, Q3 = {q3:.2f}%, IQR = {iqr:.2f}%")
-print(f"Soglia inferiore = {lower_thr:.2f}%, soglia superiore = {upper_thr:.2f}%")
-outliers = tbr_values[(tbr_values < lower_thr) | (tbr_values > upper_thr)]
-print("Valori TBR considerati outlier:")
-print(outliers.sort_values().to_list())
-
-
-
-# Output
-print(f"Media: {media:.2f}")
-print(f"Mediana: {mediana:.2f}")
-print(f"Asimmetria (skewness): {asimmetria:.2f}")
-print(f"Curtosi (kurtosis): {curtosi:.2f}")
-print(f"Numero di outlier: {len(outliers)}")
-print("Moda:", moda.tolist())
-
-# Estrai le due serie
-g0 = tbr_by_paziente.loc[ tbr_by_paziente['Has_Diagnosis']==False, '%TBR']
-g1 = tbr_by_paziente.loc[ tbr_by_paziente['Has_Diagnosis']==True,  '%TBR']
-
-# Esegui il test two-sided
-u_stat, p_value = mannwhitneyu(g0, g1, alternative='two-sided')
-
-print(f"U-statistic = {u_stat:.2f}")
-print(f"p-value      = {p_value:.4f}")
+# # Funzione per calcolare il TBR di un paziente
+# def calculate_tbr(misurazioni): # Prende in ingresso l'insieme di misurazioni di un singolo paziente
+#     totale = len(misurazioni)   # Calcola il numero totale di misurazioni del paziente
+#     righe_valide = misurazioni[(misurazioni['Measurement'] < 70)] # Seleziona solo le righe che nel campo Measurement hanno un valore minore di 70 mg/dL
+#     tbr = len(righe_valide)/totale * 100 # Calcola il %TBR facendo Misurazioni Valide/Misurazioni Totali
+#     return tbr
+#
+# pazienti = df.groupby('Patient_ID') # Dividiamo il dataset per paziente, ogni gruppo contiene le misurazioni di un singolo paziente
+# tbr_by_paziente = pazienti.apply(calculate_tbr).reset_index(name='%TBR') # Calcoliamo il TBR di ogni paziente e creiamo un nuovo dataset con 2 colonne: Ptient_ID e %TBR
+# # tbr_by_paziente = tbr_by_paziente.sort_values(by='%TBR', ascending=False)
+# print(tbr_by_paziente)
+#
+# # Grafico per la percentuale di ogni paziente
+# plt.figure(figsize=(14, 6))
+# plt.bar(tbr_by_paziente['Patient_ID'], tbr_by_paziente['%TBR'], color='skyblue')
+# plt.xticks([])
+# plt.ylabel('% Time Below Range (< 70 mg/dL)')
+# plt.xlabel('Pazienti')
+# plt.title('')
+# plt.tight_layout()
+# plt.show()
+#
+# # Statistiche descrittive di %TBR
+# print(tbr_by_paziente['%TBR'].describe())
+#
+# bins = [0, 1] + list(range(10, 110, 10))
+# tbr_intervals = pd.cut(tbr_by_paziente['%TBR'], bins=bins, right=False)
+# #Notazione [0,10) 0 é incluso ma 10 no
+#
+# # Aggiungiamo colonna per sapere se il paziente ha almeno una diagnosi
+# pazienti_con_diagnosi = set(diagnostics['Patient_ID'])
+# tbr_by_paziente['Has_Diagnosis'] = tbr_by_paziente['Patient_ID'].isin(pazienti_con_diagnosi)
+#
+# # Aggiungiamo anche gli intervalli nel dataframe
+# tbr_by_paziente['Interval'] = tbr_intervals
+#
+# # Calcoliamo il numero di pazienti CON e SENZA diagnosi per ogni intervallo
+# conta_per_interval = tbr_by_paziente.groupby(['Interval', 'Has_Diagnosis']).size().unstack(fill_value=0)
+# conta_per_interval = conta_per_interval.sort_index()
+#
+#
+# # Istogramma con due barre affiancate per ogni intervallo, con etichette
+# plt.figure(figsize=(12, 6))
+# bar_width = 0.4
+# index = range(len(conta_per_interval))
+#
+# bar1 = plt.bar([i - bar_width/2 for i in index], conta_per_interval[False], width=bar_width, label='Senza Complicanze', color='skyblue', edgecolor='black')
+# bar2 = plt.bar([i + bar_width/2 for i in index], conta_per_interval[True], width=bar_width, label='Con Complicanze', color='lightcoral', edgecolor='black')
+#
+# # Aggiunta delle etichette numeriche sopra ogni barra
+# for bars in [bar1, bar2]:
+#     for bar in bars:
+#         height = bar.get_height()
+#         if height > 0:
+#             plt.text(bar.get_x() + bar.get_width()/2, height + 0.5, str(int(height)), ha='center', va='bottom', fontsize=9)
+#
+#
+# plt.xticks(index, [str(i) for i in conta_per_interval.index], rotation=45)
+# plt.xlabel('%TBR')
+# plt.ylabel('Numero di Pazienti')
+# plt.title('')
+# plt.legend()
+# plt.tight_layout()
+# plt.show()
+#
+#
+#
+# tbr_values = tbr_by_paziente['%TBR']
+#
+# # Statistiche descrittive
+# media = tbr_values.mean()
+# mediana = tbr_values.median()
+# asimmetria = skew(tbr_values) #skewness
+# curtosi = kurtosis(tbr_values)
+#
+# tar_arrotondato = tbr_values.round()
+# moda = tar_arrotondato.mode()
+#
+# # Outlier con metodo IQR (Interquartile Range)
+# # calcola Q1, Q3 e IQR
+# q1 = tbr_values.quantile(0.25)
+# q3 = tbr_values.quantile(0.75)
+# iqr = q3 - q1
+#
+# # soglie per outlier
+# lower_thr = q1 - 1.5 * iqr
+# upper_thr = q3 + 1.5 * iqr
+#
+# print(f"Q1 = {q1:.2f}%, Q3 = {q3:.2f}%, IQR = {iqr:.2f}%")
+# print(f"Soglia inferiore = {lower_thr:.2f}%, soglia superiore = {upper_thr:.2f}%")
+# outliers = tbr_values[(tbr_values < lower_thr) | (tbr_values > upper_thr)]
+# print("Valori TBR considerati outlier:")
+# print(outliers.sort_values().to_list())
+#
+#
+#
+# # Output
+# print(f"Media: {media:.2f}")
+# print(f"Mediana: {mediana:.2f}")
+# print(f"Asimmetria (skewness): {asimmetria:.2f}")
+# print(f"Curtosi (kurtosis): {curtosi:.2f}")
+# print(f"Numero di outlier: {len(outliers)}")
+# print("Moda:", moda.tolist())
+#
+# # Estrai le due serie
+# g0 = tbr_by_paziente.loc[ tbr_by_paziente['Has_Diagnosis']==False, '%TBR']
+# g1 = tbr_by_paziente.loc[ tbr_by_paziente['Has_Diagnosis']==True,  '%TBR']
+#
+# # Esegui il test two-sided
+# u_stat, p_value = mannwhitneyu(g0, g1, alternative='two-sided')
+#
+# print(f"U-statistic = {u_stat:.2f}")
+# print(f"p-value      = {p_value:.4f}")
 ############################################################################################
 
 
