@@ -6,6 +6,7 @@ import numpy as np
 import seaborn as sns
 from sklearn.preprocessing import LabelEncoder
 from datetime import datetime, timedelta
+from scipy.stats import mannwhitneyu
 
 #FORMATTAZIONE DELLA TABELLA MOSTRATA DA TERMINALE
 ############################################################################################
@@ -391,7 +392,17 @@ diagnostics = pd.read_csv("Excel/Diagnostics.csv")
 # plt.tight_layout()
 # plt.show()
 #
+# # Estrai le due serie
+# g0 = tir_by_paziente.loc[ tir_by_paziente['Has_Diagnosis']==False, '%TIR']
+# g1 = tir_by_paziente.loc[ tir_by_paziente['Has_Diagnosis']==True,  '%TIR']
 #
+# # Esegui il test two-sided
+# u_stat, p_value = mannwhitneyu(g0, g1, alternative='two-sided')
+#
+# print(f"U-statistic = {u_stat:.2f}")
+# print(f"p-value      = {p_value:.4f}")
+
+
 # # STATISTICHE DESCRITTIVE
 # tir_values = tir_by_paziente['%TIR']
 #
@@ -469,6 +480,7 @@ diagnostics = pd.read_csv("Excel/Diagnostics.csv")
 #
 # # 9) Statistiche descrittive per %TIR_3m (facoltativo)
 # print(tir3m_by_paziente['%TIR_3m'].describe())
+
 
 ############################################################################################
 
@@ -576,6 +588,17 @@ diagnostics = pd.read_csv("Excel/Diagnostics.csv")
 # print(f"Curtosi (kurtosis): {curtosi:.2f}")
 # print(f"Numero di outlier: {len(outliers)}")
 # print("Moda:", moda.tolist())
+#
+#
+# # Estrai le due serie
+# g0 = tar_by_paziente.loc[ tar_by_paziente['Has_Diagnosis']==False, '%TAR']
+# g1 = tar_by_paziente.loc[ tar_by_paziente['Has_Diagnosis']==True,  '%TAR']
+#
+# # Esegui il test two-sided
+# u_stat, p_value = mannwhitneyu(g0, g1, alternative='two-sided')
+#
+# print(f"U-statistic = {u_stat:.2f}")
+# print(f"p-value      = {p_value:.4f}")
 ############################################################################################
 
 
@@ -898,109 +921,119 @@ diagnostics = pd.read_csv("Excel/Diagnostics.csv")
 
 # ANALISI TBR
 ############################################################################################
-# # Funzione per calcolare il TBR di un paziente
-# def calculate_tbr(misurazioni): # Prende in ingresso l'insieme di misurazioni di un singolo paziente
-#     totale = len(misurazioni)   # Calcola il numero totale di misurazioni del paziente
-#     righe_valide = misurazioni[(misurazioni['Measurement'] < 70)] # Seleziona solo le righe che nel campo Measurement hanno un valore minore di 70 mg/dL
-#     tbr = len(righe_valide)/totale * 100 # Calcola il %TBR facendo Misurazioni Valide/Misurazioni Totali
-#     return tbr
-#
-# pazienti = df.groupby('Patient_ID') # Dividiamo il dataset per paziente, ogni gruppo contiene le misurazioni di un singolo paziente
-# tbr_by_paziente = pazienti.apply(calculate_tbr).reset_index(name='%TBR') # Calcoliamo il TBR di ogni paziente e creiamo un nuovo dataset con 2 colonne: Ptient_ID e %TBR
-# # tbr_by_paziente = tbr_by_paziente.sort_values(by='%TBR', ascending=False)
-# print(tbr_by_paziente)
-#
-# # Grafico per la percentuale di ogni paziente
-# plt.figure(figsize=(14, 6))
-# plt.bar(tbr_by_paziente['Patient_ID'], tbr_by_paziente['%TBR'], color='skyblue')
-# plt.xticks([])
-# plt.ylabel('% Time Below Range (< 70 mg/dL)')
-# plt.xlabel('Pazienti')
-# plt.title('')
-# plt.tight_layout()
-# plt.show()
-#
-# # Statistiche descrittive di %TBR
-# print(tbr_by_paziente['%TBR'].describe())
-#
-# bins = [0, 1] + list(range(10, 110, 10))
-# tbr_intervals = pd.cut(tbr_by_paziente['%TBR'], bins=bins, right=False)
-# #Notazione [0,10) 0 é incluso ma 10 no
-#
-# # Aggiungiamo colonna per sapere se il paziente ha almeno una diagnosi
-# pazienti_con_diagnosi = set(diagnostics['Patient_ID'])
-# tbr_by_paziente['Has_Diagnosis'] = tbr_by_paziente['Patient_ID'].isin(pazienti_con_diagnosi)
-#
-# # Aggiungiamo anche gli intervalli nel dataframe
-# tbr_by_paziente['Interval'] = tbr_intervals
-#
-# # Calcoliamo il numero di pazienti CON e SENZA diagnosi per ogni intervallo
-# conta_per_interval = tbr_by_paziente.groupby(['Interval', 'Has_Diagnosis']).size().unstack(fill_value=0)
-# conta_per_interval = conta_per_interval.sort_index()
-#
-#
-# # Istogramma con due barre affiancate per ogni intervallo, con etichette
-# plt.figure(figsize=(12, 6))
-# bar_width = 0.4
-# index = range(len(conta_per_interval))
-#
-# bar1 = plt.bar([i - bar_width/2 for i in index], conta_per_interval[False], width=bar_width, label='Senza Complicanze', color='skyblue', edgecolor='black')
-# bar2 = plt.bar([i + bar_width/2 for i in index], conta_per_interval[True], width=bar_width, label='Con Complicanze', color='lightcoral', edgecolor='black')
-#
-# # Aggiunta delle etichette numeriche sopra ogni barra
-# for bars in [bar1, bar2]:
-#     for bar in bars:
-#         height = bar.get_height()
-#         if height > 0:
-#             plt.text(bar.get_x() + bar.get_width()/2, height + 0.5, str(int(height)), ha='center', va='bottom', fontsize=9)
-#
-#
-# plt.xticks(index, [str(i) for i in conta_per_interval.index], rotation=45)
-# plt.xlabel('%TBR')
-# plt.ylabel('Numero di Pazienti')
-# plt.title('')
-# plt.legend()
-# plt.tight_layout()
-# plt.show()
-#
-#
-#
-# tbr_values = tbr_by_paziente['%TBR']
-#
-# # Statistiche descrittive
-# media = tbr_values.mean()
-# mediana = tbr_values.median()
-# asimmetria = skew(tbr_values) #skewness
-# curtosi = kurtosis(tbr_values)
-#
-# tar_arrotondato = tbr_values.round()
-# moda = tar_arrotondato.mode()
-#
-# # Outlier con metodo IQR (Interquartile Range)
-# # calcola Q1, Q3 e IQR
-# q1 = tbr_values.quantile(0.25)
-# q3 = tbr_values.quantile(0.75)
-# iqr = q3 - q1
-#
-# # soglie per outlier
-# lower_thr = q1 - 1.5 * iqr
-# upper_thr = q3 + 1.5 * iqr
-#
-# print(f"Q1 = {q1:.2f}%, Q3 = {q3:.2f}%, IQR = {iqr:.2f}%")
-# print(f"Soglia inferiore = {lower_thr:.2f}%, soglia superiore = {upper_thr:.2f}%")
-# outliers = tbr_values[(tbr_values < lower_thr) | (tbr_values > upper_thr)]
-# print("Valori TBR considerati outlier:")
-# print(outliers.sort_values().to_list())
-#
-#
-#
-# # Output
-# print(f"Media: {media:.2f}")
-# print(f"Mediana: {mediana:.2f}")
-# print(f"Asimmetria (skewness): {asimmetria:.2f}")
-# print(f"Curtosi (kurtosis): {curtosi:.2f}")
-# print(f"Numero di outlier: {len(outliers)}")
-# print("Moda:", moda.tolist())
+# Funzione per calcolare il TBR di un paziente
+def calculate_tbr(misurazioni): # Prende in ingresso l'insieme di misurazioni di un singolo paziente
+    totale = len(misurazioni)   # Calcola il numero totale di misurazioni del paziente
+    righe_valide = misurazioni[(misurazioni['Measurement'] < 70)] # Seleziona solo le righe che nel campo Measurement hanno un valore minore di 70 mg/dL
+    tbr = len(righe_valide)/totale * 100 # Calcola il %TBR facendo Misurazioni Valide/Misurazioni Totali
+    return tbr
+
+pazienti = df.groupby('Patient_ID') # Dividiamo il dataset per paziente, ogni gruppo contiene le misurazioni di un singolo paziente
+tbr_by_paziente = pazienti.apply(calculate_tbr).reset_index(name='%TBR') # Calcoliamo il TBR di ogni paziente e creiamo un nuovo dataset con 2 colonne: Ptient_ID e %TBR
+# tbr_by_paziente = tbr_by_paziente.sort_values(by='%TBR', ascending=False)
+print(tbr_by_paziente)
+
+# Grafico per la percentuale di ogni paziente
+plt.figure(figsize=(14, 6))
+plt.bar(tbr_by_paziente['Patient_ID'], tbr_by_paziente['%TBR'], color='skyblue')
+plt.xticks([])
+plt.ylabel('% Time Below Range (< 70 mg/dL)')
+plt.xlabel('Pazienti')
+plt.title('')
+plt.tight_layout()
+plt.show()
+
+# Statistiche descrittive di %TBR
+print(tbr_by_paziente['%TBR'].describe())
+
+bins = [0, 1] + list(range(10, 110, 10))
+tbr_intervals = pd.cut(tbr_by_paziente['%TBR'], bins=bins, right=False)
+#Notazione [0,10) 0 é incluso ma 10 no
+
+# Aggiungiamo colonna per sapere se il paziente ha almeno una diagnosi
+pazienti_con_diagnosi = set(diagnostics['Patient_ID'])
+tbr_by_paziente['Has_Diagnosis'] = tbr_by_paziente['Patient_ID'].isin(pazienti_con_diagnosi)
+
+# Aggiungiamo anche gli intervalli nel dataframe
+tbr_by_paziente['Interval'] = tbr_intervals
+
+# Calcoliamo il numero di pazienti CON e SENZA diagnosi per ogni intervallo
+conta_per_interval = tbr_by_paziente.groupby(['Interval', 'Has_Diagnosis']).size().unstack(fill_value=0)
+conta_per_interval = conta_per_interval.sort_index()
+
+
+# Istogramma con due barre affiancate per ogni intervallo, con etichette
+plt.figure(figsize=(12, 6))
+bar_width = 0.4
+index = range(len(conta_per_interval))
+
+bar1 = plt.bar([i - bar_width/2 for i in index], conta_per_interval[False], width=bar_width, label='Senza Complicanze', color='skyblue', edgecolor='black')
+bar2 = plt.bar([i + bar_width/2 for i in index], conta_per_interval[True], width=bar_width, label='Con Complicanze', color='lightcoral', edgecolor='black')
+
+# Aggiunta delle etichette numeriche sopra ogni barra
+for bars in [bar1, bar2]:
+    for bar in bars:
+        height = bar.get_height()
+        if height > 0:
+            plt.text(bar.get_x() + bar.get_width()/2, height + 0.5, str(int(height)), ha='center', va='bottom', fontsize=9)
+
+
+plt.xticks(index, [str(i) for i in conta_per_interval.index], rotation=45)
+plt.xlabel('%TBR')
+plt.ylabel('Numero di Pazienti')
+plt.title('')
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+
+
+tbr_values = tbr_by_paziente['%TBR']
+
+# Statistiche descrittive
+media = tbr_values.mean()
+mediana = tbr_values.median()
+asimmetria = skew(tbr_values) #skewness
+curtosi = kurtosis(tbr_values)
+
+tar_arrotondato = tbr_values.round()
+moda = tar_arrotondato.mode()
+
+# Outlier con metodo IQR (Interquartile Range)
+# calcola Q1, Q3 e IQR
+q1 = tbr_values.quantile(0.25)
+q3 = tbr_values.quantile(0.75)
+iqr = q3 - q1
+
+# soglie per outlier
+lower_thr = q1 - 1.5 * iqr
+upper_thr = q3 + 1.5 * iqr
+
+print(f"Q1 = {q1:.2f}%, Q3 = {q3:.2f}%, IQR = {iqr:.2f}%")
+print(f"Soglia inferiore = {lower_thr:.2f}%, soglia superiore = {upper_thr:.2f}%")
+outliers = tbr_values[(tbr_values < lower_thr) | (tbr_values > upper_thr)]
+print("Valori TBR considerati outlier:")
+print(outliers.sort_values().to_list())
+
+
+
+# Output
+print(f"Media: {media:.2f}")
+print(f"Mediana: {mediana:.2f}")
+print(f"Asimmetria (skewness): {asimmetria:.2f}")
+print(f"Curtosi (kurtosis): {curtosi:.2f}")
+print(f"Numero di outlier: {len(outliers)}")
+print("Moda:", moda.tolist())
+
+# Estrai le due serie
+g0 = tbr_by_paziente.loc[ tbr_by_paziente['Has_Diagnosis']==False, '%TBR']
+g1 = tbr_by_paziente.loc[ tbr_by_paziente['Has_Diagnosis']==True,  '%TBR']
+
+# Esegui il test two-sided
+u_stat, p_value = mannwhitneyu(g0, g1, alternative='two-sided')
+
+print(f"U-statistic = {u_stat:.2f}")
+print(f"p-value      = {p_value:.4f}")
 ############################################################################################
 
 
@@ -1384,248 +1417,284 @@ diagnostics = pd.read_csv("Excel/Diagnostics.csv")
 
 #SCATTERPLOT - RELAZIONE TRA VALORI DI GLUCOSIO E VALORI DELLE ANALISI FATTE
 ############################################################################################
-df2 = pd.read_csv("Excel/glucose_bio_correlated.csv", parse_dates=["Reception_Date"])
-diagnostics = pd.read_csv("Excel/Diagnostics.csv")
-
-max_param_value = df2["Parameter_Value"].max()  #Valore massimo
-row_max_param = df2.loc[df2["Parameter_Value"].idxmax()] #Indice di riga del valore massimo, .loc estrae l'intera riga
-
-max_avg_glucose = df2["Avg_Glucose"].max()
-row_max_gluc = df2.loc[df2["Avg_Glucose"].idxmax()]
-
-#Stampa dei valori massimi e relativi indici di riga
-print(f"Massimo Parameter_Value: {max_param_value}")
-print("Record corrispondente:")
-print(row_max_param)
-print(f"\nMassimo Avg_Glucose: {max_avg_glucose}")
-print("Record corrispondente:")
-print(row_max_gluc)
-
-# trasforma la colonna Patient_ID di diagnostics in un insieme e crea una nuova colonna di booleani
-# se il paziente preso in considerazione si trova nel dataset diagnostics allora la nuova colonna Has_Diagnosis diventa True, altrimenti False
-diagnosed_patients = set(diagnostics["Patient_ID"])
-df2["Has_Diagnosis"] = df2["Patient_ID"].isin(diagnosed_patients)
-
-#Preparazione diagrammi, n indica il numero di diagrammi da stampare (17), e poi vengono messe righe e colonne
-params = df2["Parameter"].unique()
-n = len(params)
-cols = 4
-rows = (n + cols - 1) // cols
-
-#Calcoliamo minimi e massimi dei valori che dobbiamo rappresentare sugli scatterplot, in modo che nelle 3 rappresentazioni differenti
-#l'asse delle scisse e quella delle ordinate abbia sempre gli stessi valori
-limits = {}
-for param in params:
-    sub = df2[df2["Parameter"] == param]
-    x_min, x_max = sub["Parameter_Value"].min(), sub["Parameter_Value"].max()
-    y_min, y_max = sub["Avg_Glucose"].min(), sub["Avg_Glucose"].max()
-    x_pad = (x_max - x_min) * 0.05
-    y_pad = (y_max - y_min) * 0.05
-    limits[param] = {
-        "xlim": (x_min - x_pad, x_max + x_pad),
-        "ylim": (y_min - y_pad, y_max + y_pad)
-    }
-
-#Funzione di plot per gruppi, con limiti fissi
-def plot_group(df_subset, title, blue=True, red=True):
-    fig, axes = plt.subplots(rows, cols, figsize=(cols*4, rows*3))
-    axes = axes.flatten()
-    for ax, param in zip(axes, params):
-        sub = df_subset[df_subset["Parameter"] == param]
-        if blue:
-            ax.scatter(
-                sub[~sub["Has_Diagnosis"]]["Parameter_Value"], #Seleziona solo le righe di sub con pazienti senza complicanze
-                sub[~sub["Has_Diagnosis"]]["Avg_Glucose"],
-                facecolors='none', edgecolors='blue', marker='o',
-                linewidths=1, label='No Complicanze'
-            )
-        if red:
-            ax.scatter(
-                sub[sub["Has_Diagnosis"]]["Parameter_Value"], #Seleziona solo le righe di sub con pazienti con complicanze
-                sub[sub["Has_Diagnosis"]]["Avg_Glucose"],
-                facecolors='none', edgecolors='red', marker='o',
-                linewidths=1, label='Con Complicanze'
-            )
-        # Applica limiti calcolati
-        ax.set_xlim(limits[param]["xlim"])
-        ax.set_ylim(limits[param]["ylim"])
-        ax.set_title(param, fontsize=8)
-        ax.set_xlabel("Param value", fontsize=6)
-        ax.set_ylabel("Avg Glucose", fontsize=6)
-        ax.legend(fontsize=6)
-    # Nascondi assi in eccesso
-    for ax in axes[n:]:
-        ax.set_visible(False)
-    fig.suptitle(title, fontsize=12, y=1.02)
-    plt.tight_layout()
-    return fig
-
-#Figura 1: combinato blu+rosso
-plot_group(df2, "Tutti i pazienti: Con e Senza complicanze", blue=True, red=True)
-
-#Figura 2: solo CON diagnosi (rosso)
-plot_group(df2, "Solo pazienti CON complicanze", blue=False, red=True)
-
-#Figura 3: solo SENZA diagnosi (blu)
-plot_group(df2, "Solo pazienti SENZA complicanze", blue=True, red=False)
-
-plt.show()
-
-#BOXPLOT - RELAZIONE TRA VALORI DI GLUCOSIO E VALORI DELLE ANALISI FATTE
-############################################################################################
-params = df2["Parameter"].unique()
-n = len(params)
-
-cols = 4
-rows = (n + cols - 1) // cols
-
-fig, axes = plt.subplots(rows, cols, figsize=(cols * 5, rows * 4))
-axes = axes.flatten()
-
-for i, param in enumerate(params):
-    sub = df2[df2["Parameter"] == param]
-    data_to_plot = [
-        sub[sub["Has_Diagnosis"] == False]["Parameter_Value"],
-        sub[sub["Has_Diagnosis"] == True]["Parameter_Value"]
-    ]
-    axes[i].boxplot(
-        data_to_plot,
-        tick_labels=["Senza", "Con"],
-        patch_artist=True,
-        boxprops=dict(facecolor='lightblue'),
-        medianprops=dict(color='red')
-    )
-    axes[i].set_title(param, fontsize=9)
-    axes[i].set_ylabel("Valore parametro", fontsize=8)
-
-# Nasconde eventuali assi vuoti
-for ax in axes[n:]:
-    ax.set_visible(False)
-
-fig.suptitle(
-    "Boxplot per ciascun parametro biochimico (Con vs Senza complicanze)",
-    fontsize=14, y=1.02
-)
-
-# Regola lo spacing verticale
-fig.subplots_adjust(hspace=0.6)
-
-# Assicura lo stesso comportamento del secondo blocco
-plt.tight_layout()
-
-plt.show()
-
-
-
-
-
-#BOX PLOT SESSO
-########################################
-# 1) Leggi il file con le informazioni di sesso
-patient_info = pd.read_csv("Excel/Patient_info.csv")  # contiene Patient_ID e Sex (M/F)
-
-# 2) Fai il merge con df2
-df2 = df2.merge(patient_info[['Patient_ID', 'Sex']], on='Patient_ID', how='left')
-
-# 3) Mappa M/F in etichette italiane
-df2['Sex_label'] = df2['Sex'].map({'M': 'Maschio', 'F': 'Femmina'})
-
-# 4) Prepara parametri e dimensioni della griglia
-params = df2["Parameter"].unique()
-n = len(params)
-cols = 4
-rows = (n + cols - 1) // cols
-
-# 5) Crea la figura e gli assi
-fig, axes = plt.subplots(rows, cols, figsize=(cols * 5, rows * 4))
-axes = axes.flatten()
-
-# 6) Per ciascun parametro, disegna il boxplot Maschio vs Femmina
-for i, param in enumerate(params):
-    sub = df2[df2["Parameter"] == param]
-    data_to_plot = [
-        sub[sub["Sex_label"] == "Maschio"]["Parameter_Value"],
-        sub[sub["Sex_label"] == "Femmina"]["Parameter_Value"]
-    ]
-    axes[i].boxplot(
-        data_to_plot,
-        tick_labels=["Maschio", "Femmina"],
-        patch_artist=True,
-        boxprops=dict(facecolor='lightblue'),
-        medianprops=dict(color='red')
-    )
-    axes[i].set_title(param, fontsize=9)
-    axes[i].set_ylabel("Valore parametro", fontsize=8)
-
-# 7) Nascondi eventuali assi vuoti
-for ax in axes[n:]:
-    ax.set_visible(False)
-
-# 8) Titolo e spacing verticale
-fig.suptitle(
-    "Boxplot per ciascun parametro biochimico (Maschio vs Femmina)",
-    fontsize=14, y=1.02
-)
-fig.subplots_adjust(hspace=0.6)
-
-# 9) Mostra
-plt.tight_layout()
-plt.show()
-
-#BOX PLOT ETA
-########################################
-# --- 1) Calcola l'età al 2025 basandoti sul Birth_year ---
-current_year = 2025
-patient_info['Age'] = current_year - patient_info['Birth_year']
-
-# --- 2) Definisci le fasce d'età ---
-bins = [0, 30, 50, 70, 120]
-labels = ['<30', '30–49', '50–69', '≥70']
-patient_info['Age_group'] = pd.cut(patient_info['Age'], bins=bins, labels=labels, right=False)
-
-# --- 3) Associa le fasce d'età a df2 (merge se non già fatto) ---
-df2 = df2.merge(patient_info[['Patient_ID', 'Age_group']], on='Patient_ID', how='left')
-
-# --- 4) Prepara parametri e dimensioni della griglia ---
-params = df2["Parameter"].unique()
-n = len(params)
-cols = 4
-rows = (n + cols - 1) // cols
-
-# --- 5) Crea la figura e gli assi ---
-fig, axes = plt.subplots(rows, cols, figsize=(cols * 5, rows * 4))
-axes = axes.flatten()
-
-# --- 6) Disegna i boxplot per ciascuna fascia d'età ---
-for i, param in enumerate(params):
-    sub = df2[df2["Parameter"] == param]
-    data_to_plot = [sub[sub["Age_group"] == grp]["Parameter_Value"] for grp in labels]
-
-    axes[i].boxplot(
-        data_to_plot,
-        tick_labels=labels,
-        patch_artist=True,
-        boxprops=dict(facecolor='lightblue'),
-        medianprops=dict(color='red')
-    )
-    axes[i].set_title(param, fontsize=9)
-    axes[i].set_ylabel("Valore parametro", fontsize=8)
-
-# --- 7) Nascondi eventuali assi vuoti ---
-for ax in axes[n:]:
-    ax.set_visible(False)
-
-# --- 8) Titolo e spacing verticale ---
-fig.suptitle(
-    "Boxplot per ciascun parametro biochimico\nsuddivisi per fasce di età",
-    fontsize=14, y=1.02
-)
-fig.subplots_adjust(hspace=0.6)
-
-# --- 9) Allinea il layout esattamente come negli altri plot ---
-plt.tight_layout()
-
-# --- 10) Mostra la figura ---
-plt.show()
+# df2 = pd.read_csv("Excel/glucose_bio_correlated.csv", parse_dates=["Reception_Date"])
+# diagnostics = pd.read_csv("Excel/Diagnostics.csv")
+#
+# max_param_value = df2["Parameter_Value"].max()  #Valore massimo
+# row_max_param = df2.loc[df2["Parameter_Value"].idxmax()] #Indice di riga del valore massimo, .loc estrae l'intera riga
+#
+# max_avg_glucose = df2["Avg_Glucose"].max()
+# row_max_gluc = df2.loc[df2["Avg_Glucose"].idxmax()]
+#
+# #Stampa dei valori massimi e relativi indici di riga
+# print(f"Massimo Parameter_Value: {max_param_value}")
+# print("Record corrispondente:")
+# print(row_max_param)
+# print(f"\nMassimo Avg_Glucose: {max_avg_glucose}")
+# print("Record corrispondente:")
+# print(row_max_gluc)
+#
+# # trasforma la colonna Patient_ID di diagnostics in un insieme e crea una nuova colonna di booleani
+# # se il paziente preso in considerazione si trova nel dataset diagnostics allora la nuova colonna Has_Diagnosis diventa True, altrimenti False
+# diagnosed_patients = set(diagnostics["Patient_ID"])
+# df2["Has_Diagnosis"] = df2["Patient_ID"].isin(diagnosed_patients)
+#
+# #Preparazione diagrammi, n indica il numero di diagrammi da stampare (17), e poi vengono messe righe e colonne
+# params = df2["Parameter"].unique()
+# n = len(params)
+# cols = 4
+# rows = (n + cols - 1) // cols
+#
+# #Calcoliamo minimi e massimi dei valori che dobbiamo rappresentare sugli scatterplot, in modo che nelle 3 rappresentazioni differenti
+# #l'asse delle scisse e quella delle ordinate abbia sempre gli stessi valori
+# limits = {}
+# for param in params:
+#     sub = df2[df2["Parameter"] == param]
+#     x_min, x_max = sub["Parameter_Value"].min(), sub["Parameter_Value"].max()
+#     y_min, y_max = sub["Avg_Glucose"].min(), sub["Avg_Glucose"].max()
+#     x_pad = (x_max - x_min) * 0.05
+#     y_pad = (y_max - y_min) * 0.05
+#     limits[param] = {
+#         "xlim": (x_min - x_pad, x_max + x_pad),
+#         "ylim": (y_min - y_pad, y_max + y_pad)
+#     }
+#
+# #Funzione di plot per gruppi, con limiti fissi
+# def plot_group(df_subset, title, blue=True, red=True):
+#     fig, axes = plt.subplots(rows, cols, figsize=(cols*4, rows*3))
+#     axes = axes.flatten()
+#     for ax, param in zip(axes, params):
+#         sub = df_subset[df_subset["Parameter"] == param]
+#         if blue:
+#             ax.scatter(
+#                 sub[~sub["Has_Diagnosis"]]["Parameter_Value"], #Seleziona solo le righe di sub con pazienti senza complicanze
+#                 sub[~sub["Has_Diagnosis"]]["Avg_Glucose"],
+#                 facecolors='none', edgecolors='blue', marker='o',
+#                 linewidths=1, label='No Complicanze'
+#             )
+#         if red:
+#             ax.scatter(
+#                 sub[sub["Has_Diagnosis"]]["Parameter_Value"], #Seleziona solo le righe di sub con pazienti con complicanze
+#                 sub[sub["Has_Diagnosis"]]["Avg_Glucose"],
+#                 facecolors='none', edgecolors='red', marker='o',
+#                 linewidths=1, label='Con Complicanze'
+#             )
+#         # Applica limiti calcolati
+#         ax.set_xlim(limits[param]["xlim"])
+#         ax.set_ylim(limits[param]["ylim"])
+#         ax.set_title(param, fontsize=8)
+#         ax.set_xlabel("Param value", fontsize=6)
+#         ax.set_ylabel("Avg Glucose", fontsize=6)
+#         ax.legend(fontsize=6)
+#     # Nascondi assi in eccesso
+#     for ax in axes[n:]:
+#         ax.set_visible(False)
+#     fig.suptitle(title, fontsize=12, y=1.02)
+#     plt.tight_layout()
+#     return fig
+#
+# #Figura 1: combinato blu+rosso
+# plot_group(df2, "Tutti i pazienti: Con e Senza complicanze", blue=True, red=True)
+#
+# #Figura 2: solo CON diagnosi (rosso)
+# plot_group(df2, "Solo pazienti CON complicanze", blue=False, red=True)
+#
+# #Figura 3: solo SENZA diagnosi (blu)
+# plot_group(df2, "Solo pazienti SENZA complicanze", blue=True, red=False)
+#
+# plt.show()
+#
+# #BOXPLOT - RELAZIONE TRA VALORI DI GLUCOSIO E VALORI DELLE ANALISI FATTE
+# ############################################################################################
+# params = df2["Parameter"].unique()
+# n = len(params)
+#
+# cols = 4
+# rows = (n + cols - 1) // cols
+#
+# fig, axes = plt.subplots(rows, cols, figsize=(cols * 5, rows * 4))
+# axes = axes.flatten()
+#
+# for i, param in enumerate(params):
+#     sub = df2[df2["Parameter"] == param]
+#     data_to_plot = [
+#         sub[sub["Has_Diagnosis"] == False]["Parameter_Value"],
+#         sub[sub["Has_Diagnosis"] == True]["Parameter_Value"]
+#     ]
+#     axes[i].boxplot(
+#         data_to_plot,
+#         tick_labels=["Senza", "Con"],
+#         patch_artist=True,
+#         boxprops=dict(facecolor='lightblue'),
+#         medianprops=dict(color='red')
+#     )
+#     axes[i].set_title(param, fontsize=9)
+#     axes[i].set_ylabel("Valore parametro", fontsize=8)
+#
+# # Nasconde eventuali assi vuoti
+# for ax in axes[n:]:
+#     ax.set_visible(False)
+#
+# fig.suptitle(
+#     "Boxplot per ciascun parametro biochimico (Con vs Senza complicanze)",
+#     fontsize=14, y=1.02
+# )
+#
+# # Regola lo spacing verticale
+# fig.subplots_adjust(hspace=0.6)
+#
+# # Assicura lo stesso comportamento del secondo blocco
+# plt.tight_layout()
+#
+# plt.show()
+#
+#
+#
+#
+#
+# #BOX PLOT SESSO
+# ########################################
+# # 1) Leggi il file con le informazioni di sesso
+# patient_info = pd.read_csv("Excel/Patient_info.csv")  # contiene Patient_ID e Sex (M/F)
+#
+# # 2) Fai il merge con df2
+# df2 = df2.merge(patient_info[['Patient_ID', 'Sex']], on='Patient_ID', how='left')
+#
+# # 3) Mappa M/F in etichette italiane
+# df2['Sex_label'] = df2['Sex'].map({'M': 'Maschio', 'F': 'Femmina'})
+#
+# # 4) Prepara parametri e dimensioni della griglia
+# params = df2["Parameter"].unique()
+# n = len(params)
+# cols = 4
+# rows = (n + cols - 1) // cols
+#
+# # 5) Definisci l'ordine dei gruppi e le etichette
+# group_combinations = [
+#     ("Maschio", False),
+#     ("Maschio", True),
+#     ("Femmina", False),
+#     ("Femmina", True),
+# ]
+# tick_labels = ["M-Senza", "M-Con", "F-Senza", "F-Con"]
+#
+# # 6) Crea la figura e gli assi
+# fig, axes = plt.subplots(rows, cols, figsize=(cols * 5, rows * 4))
+# axes = axes.flatten()
+#
+# # 7) Per ciascun parametro, disegna il boxplot con 4 gruppi
+# for i, param in enumerate(params):
+#     sub = df2[df2["Parameter"] == param]
+#     data_to_plot = [
+#         sub[(sub["Sex_label"] == sex) & (sub["Has_Diagnosis"] == diag)]["Parameter_Value"]
+#         for sex, diag in group_combinations
+#     ]
+#     axes[i].boxplot(
+#         data_to_plot,
+#         tick_labels=tick_labels,
+#         patch_artist=True,
+#         boxprops=dict(facecolor='lightblue'),
+#         medianprops=dict(color='red')
+#     )
+#     axes[i].set_title(param, fontsize=9)
+#     axes[i].set_ylabel("Valore parametro", fontsize=8)
+#     # Ruota le etichette se servono
+#     axes[i].tick_params(axis='x', rotation=45, labelsize=7)
+#
+# # 8) Nascondi eventuali assi vuoti
+# for ax in axes[n:]:
+#     ax.set_visible(False)
+#
+# # 9) Titolo e spacing verticale
+# fig.suptitle(
+#     "Boxplot per ciascun parametro biochimico\nMaschi vs Femmine, Senza vs Con complicanze",
+#     fontsize=14, y=1.02
+# )
+# fig.subplots_adjust(hspace=0.8, top=0.92)
+#
+# # 10) Mostra
+# plt.tight_layout()
+# plt.show()
+#
+# #BOX PLOT ETA
+# ########################################
+# # --- 1) Calcola l'età al 2025 basandoti sul Birth_year ---
+# current_year = 2025
+# patient_info['Age'] = current_year - patient_info['Birth_year']
+#
+# # --- 2) Definisci le fasce d'età ---
+# bins = [0, 30, 50, 70, 120]
+# labels = ['<30', '30–49', '50–69', '≥70']
+# patient_info['Age_group'] = pd.cut(
+#     patient_info['Age'],
+#     bins=bins,
+#     labels=labels,
+#     right=False
+# )
+#
+# # --- 3) Associa le fasce d'età a df2 (merge se non già fatto) ---
+# df2 = df2.merge(
+#     patient_info[['Patient_ID', 'Age_group']],
+#     on='Patient_ID',
+#     how='left'
+# )
+#
+# # --- 4) Prepara parametri e dimensioni della griglia ---
+# params = df2["Parameter"].unique()
+# n = len(params)
+# cols = 4
+# rows = (n + cols - 1) // cols
+#
+# # --- 5) Prepara le combinazioni Age × Diagnosi e le relative etichette ---
+# group_combinations = [
+#     (age, diag)
+#     for age in labels
+#     for diag in [False, True]
+# ]
+# tick_labels = [
+#     f"{age}-{'Con' if diag else 'Senza'}"
+#     for age, diag in group_combinations
+# ]
+#
+# # --- 6) Crea la figura e gli assi ---
+# fig, axes = plt.subplots(rows, cols, figsize=(cols * 6, rows * 5))
+# axes = axes.flatten()
+#
+# # --- 7) Disegna i boxplot per ciascun parametro e ciascuna combinazione ---
+# for i, param in enumerate(params):
+#     sub = df2[df2["Parameter"] == param]
+#     data_to_plot = [
+#         sub[
+#             (sub["Age_group"] == age) &
+#             (sub["Has_Diagnosis"] == diag)
+#         ]["Parameter_Value"]
+#         for age, diag in group_combinations
+#     ]
+#     axes[i].boxplot(
+#         data_to_plot,
+#         tick_labels=tick_labels,
+#         patch_artist=True,
+#         boxprops=dict(facecolor='lightblue'),
+#         medianprops=dict(color='red')
+#     )
+#     axes[i].set_title(param, fontsize=10)
+#     axes[i].set_ylabel("Valore parametro", fontsize=9)
+#     axes[i].tick_params(axis='x', rotation=45, labelsize=7)
+#
+# # --- 8) Nascondi eventuali assi vuoti ---
+# for ax in axes[n:]:
+#     ax.set_visible(False)
+#
+# # --- 9) Titolo e layout ---
+# fig.suptitle(
+#     "Boxplot per ciascun parametro biochimico\n"
+#     "suddivisi per fasce d'età e complicanze",
+#     fontsize=16, y=1.02
+# )
+# fig.subplots_adjust(hspace=0.8, top=0.92)
+# plt.tight_layout()
+#
+# # --- 10) Mostra la figura ---
+# plt.show()
 
 ############################################################################################
