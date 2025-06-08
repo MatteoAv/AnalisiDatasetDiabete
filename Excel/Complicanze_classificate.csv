@@ -1,0 +1,595 @@
+Code,Description,TipoComplicanza
+272.4,Other and unspecified hyperlipidemia,Non diabetica
+354.0,Carpal tunnel syndrome,Non diabetica
+574.00,"Calculus of gallbladder with acute cholecystitis, without mention of obstruction",Non diabetica
+719.41,"Pain in joint, shoulder region",Non diabetica
+253.5,Diabetes insipidus,Diabetica
+372.14,Other chronic allergic conjunctivitis,Non diabetica
+995.27,Other drug allergy,Non diabetica
+788.3,"Urinary incontinence, unspecified",Non diabetica
+250.51,"Diabetes with ophthalmic manifestations, type I [juvenile type], not stated as uncontrolled",Diabetica
+300.02,Generalized anxiety disorder,Non diabetica
+472.0,Chronic rhinitis,Non diabetica
+477.0,Allergic rhinitis due to pollen,Non diabetica
+493.9,"Asthma, unspecified type, unspecified",Non diabetica
+244.8,Other specified acquired hypothyroidism,Non diabetica
+250.5,"Diabetes with ophthalmic manifestations, type II or unspecified type, not stated as uncontrolled",Diabetica
+365.04,Ocular hypertension,Diabetica
+244.9,Unspecified acquired hypothyroidism,Non diabetica
+362.9,Unspecified retinal disorder,Diabetica
+401.9,Unspecified essential hypertension,Non diabetica
+562.1,Diverticulosis of colon (without mention of hemorrhage),Non diabetica
+812.44,Closed fracture of unspecified condyle(s) of humerus,Non diabetica
+V58.61,Long-term (current) use of anticoagulants,Non diabetica
+459.81,"Venous (peripheral) insufficiency, unspecified",Non diabetica
+V24.2,Routine postpartum follow-up,Non diabetica
+V67.00,"Follow-up examination, following surgery, unspecified",Non diabetica
+250.8,"Diabetes with other specified manifestations, type II or unspecified type, not stated as uncontrolled",Diabetica
+272.2,Mixed hyperlipidemia,Non diabetica
+278.01,Morbid obesity,Non diabetica
+300.4,Dysthymic disorder,Non diabetica
+634.9,"Spontaneous abortion, without mention of complication, unspecified",Non diabetica
+V49.70,Unspecified level lower limb amputation status,Non diabetica
+362.01,Background diabetic retinopathy,Diabetica
+472.1,Chronic pharyngitis,Non diabetica
+787.91,Diarrhea,Non diabetica
+280.9,"Iron deficiency anemia, unspecified",Non diabetica
+728.6,Contracture of palmar fascia,Non diabetica
+387.9,"Otosclerosis, unspecified",Non diabetica
+250.4,"Diabetes with renal manifestations, type II or unspecified type, not stated as uncontrolled",Diabetica
+289.9,Unspecified diseases of blood and blood-forming organs,Non diabetica
+305.1,Tobacco use disorder,Non diabetica
+477.9,"Allergic rhinitis, cause unspecified",Non diabetica
+215.9,"Other benign neoplasm of connective and other soft tissue, site unspecified",Non diabetica
+218.9,"Leiomyoma of uterus, unspecified",Non diabetica
+220,Benign neoplasm of ovary,Non diabetica
+617.9,"Endometriosis, site unspecified",Non diabetica
+620.2,Other and unspecified ovarian cyst,Non diabetica
+784.0,Headache,Non diabetica
+V25.2,Sterilization,Non diabetica
+300.00,"Anxiety state, unspecified",Non diabetica
+416.0,Primary pulmonary hypertension,Non diabetica
+443.0,Raynaud's syndrome,Non diabetica
+592.0,Calculus of kidney,Non diabetica
+701.0,Circumscribed scleroderma,Non diabetica
+726.12,Bicipital tenosynovitis,Non diabetica
+732.9,Unspecified osteochondropathy,Non diabetica
+79.82,SARS-associated coronavirus,Non diabetica
+813.81,Closed fracture of unspecified part of radius (alone),Non diabetica
+493.00,"Extrinsic asthma, unspecified",Non diabetica
+648.83,"Abnormal glucose tolerance of mother, antepartum condition or complication",Non diabetica
+737.3,"Scoliosis [and kyphoscoliosis], idiopathic",Non diabetica
+009.0,"Infectious colitis, enteritis, and gastroenteritis",Non diabetica
+278.00,"Obesity, unspecified",Non diabetica
+555.9,Regional enteritis of unspecified site,Non diabetica
+256.4,Polycystic ovaries,Non diabetica
+686.9,Unspecified local infection of skin and subcutaneous tissue,Non diabetica
+726.9,Enthesopathy of unspecified site,Non diabetica
+492.8,Other emphysema,Non diabetica
+496,"Chronic airway obstruction, not elsewhere classified",Non diabetica
+577.0,Acute pancreatitis,Non diabetica
+194.8,Malignant neoplasm of other endocrine glands and related structures,Non diabetica
+251.2,"Hypoglycemia, unspecified",Non diabetica
+435.3,Vertebrobasilar artery syndrome,Non diabetica
+435.9,Unspecified transient cerebral ischemia,Non diabetica
+627.3,Postmenopausal atrophic vaginitis,Non diabetica
+785.6,Enlargement of lymph nodes,Non diabetica
+V67.9,Unspecified follow-up examination,Non diabetica
+250.9,"Diabetes with unspecified complication, type II or unspecified type, not stated as uncontrolled",Diabetica
+370.00,"Corneal ulcer, unspecified",Non diabetica
+790.4,Nonspecific elevation of levels of transaminase or lactic acid dehydrogenase [LDH],Non diabetica
+625.3,Dysmenorrhea,Non diabetica
+389.9,Unspecified hearing loss,Non diabetica
+V15.82,Personal history of tobacco use,Non diabetica
+242.9,"Thyrotoxicosis without mention of goiter or other cause, and without mention of thyrotoxic crisis or storm",Non diabetica
+424.0,Mitral valve disorders,Non diabetica
+592.1,Calculus of ureter,Non diabetica
+579.0,Celiac disease,Non diabetica
+780.52,"Insomnia, unspecified",Non diabetica
+82.41,Ehrlichiosis chafeensis [E. chafeensis],Non diabetica
+401.1,Benign essential hypertension,Non diabetica
+451.9,Phlebitis and thrombophlebitis of unspecified site,Non diabetica
+571.3,"Alcoholic liver damage, unspecified",Non diabetica
+571.8,Other chronic nonalcoholic liver disease,Non diabetica
+724.3,Sciatica,Non diabetica
+786.5,"Chest pain, unspecified",Non diabetica
+790.6,Other abnormal blood chemistry,Non diabetica
+250.6,"Diabetes with neurological manifestations, type II or unspecified type, not stated as uncontrolled",Diabetica
+410.9,"Acute myocardial infarction of unspecified site, episode of care unspecified",Non diabetica
+346.9,"Migraine, unspecified, without mention of intractable migraine without mention of status migrainosus",Non diabetica
+726.19,Other specified disorders of bursae and tendons in shoulder region,Non diabetica
+812.2,Closed fracture of unspecified part of humerus,Non diabetica
+285.9,"Anemia, unspecified",Non diabetica
+709.01,Vitiligo,Non diabetica
+550.9,"Inguinal hernia, without mention of obstruction or gangrene, unilateral or unspecified (not specified as recurrent)",Non diabetica
+738.4,Acquired spondylolisthesis,Non diabetica
+715.34,"Osteoarthrosis, localized, not specified whether primary or secondary, hand",Non diabetica
+726.2,"Other affections of shoulder region, not elsewhere classified",Non diabetica
+780.57,Unspecified sleep apnea,Non diabetica
+363.7,"Choroidal detachment, unspecified",Non diabetica
+556.9,"Ulcerative colitis, unspecified",Non diabetica
+157.9,"Malignant neoplasm of pancreas, part unspecified",Non diabetica
+197.7,"Malignant neoplasm of liver, secondary",Non diabetica
+41.86,Helicobacter pylori [H. pylori],Non diabetica
+474.9,Unspecified chronic disease of tonsils and adenoids,Non diabetica
+518.89,"Other diseases of lung, not elsewhere classified",Non diabetica
+696.0,Psoriatic arthropathy,Non diabetica
+V15.0,"Allergy, other than to medicinal agents",Non diabetica
+726.1,"Disorders of bursae and tendons in shoulder region, unspecified",Non diabetica
+792.1,Nonspecific abnormal findings in stool contents,Non diabetica
+239.4,Neoplasm of unspecified nature of bladder,Non diabetica
+356.9,Unspecified hereditary and idiopathic peripheral neuropathy,Diabetica
+428.9,"Heart failure, unspecified",Non diabetica
+600.00,Hypertrophy (benign) of prostate without urinary obstruction and other lower urinary tract symptom (LUTS),Non diabetica
+535.1,"Atrophic gastritis, without mention of hemorrhage",Non diabetica
+553.3,Diaphragmatic hernia without mention of obstruction or gangrene,Non diabetica
+250.73,"Diabetes with peripheral circulatory disorders, type I [juvenile type], uncontrolled",Diabetica
+433.3,Occlusion and stenosis of multiple and bilateral precerebral arteries without mention of cerebral infarction,Non diabetica
+459.9,Unspecified circulatory system disorder,Non diabetica
+403.9,"Hypertensive chronic kidney disease, unspecified, with chronic kidney disease stage I through stage IV, or unspecified",Non diabetica
+715.36,"Osteoarthrosis, localized, not specified whether primary or secondary, lower leg",Non diabetica
+719.55,"Stiffness of joint, not elsewhere classified, pelvic region and thigh",Non diabetica
+727.51,Synovial cyst of popliteal space,Non diabetica
+162.9,"Malignant neoplasm of bronchus and lung, unspecified",Non diabetica
+199.1,Other malignant neoplasm without specification of site,Non diabetica
+272.0,Pure hypercholesterolemia,Non diabetica
+275.0,Disorders of iron metabolism,Non diabetica
+366.9,Unspecified cataract,Non diabetica
+447.9,Unspecified disorders of arteries and arterioles,Non diabetica
+574.01,"Calculus of gallbladder with acute cholecystitis, with obstruction",Non diabetica
+574.31,"Calculus of bile duct with acute cholecystitis, with obstruction",Non diabetica
+733.00,"Osteoporosis, unspecified",Non diabetica
+813.41,Closed Colles' fracture,Non diabetica
+586,"Renal failure, unspecified",Non diabetica
+V68.1,Issue of repeat prescriptions,Non diabetica
+250.7,"Diabetes with peripheral circulatory disorders, type II or unspecified type, not stated as uncontrolled",Diabetica
+355.9,Mononeuritis of unspecified site,Non diabetica
+438.0,"Late effects of cerebrovascular disease, cognitive deficits",Non diabetica
+440.21,Atherosclerosis of native arteries of the extremities with intermittent claudication,Non diabetica
+530.2,Ulcer of esophagus without bleeding,Non diabetica
+530.81,Esophageal reflux,Non diabetica
+531.3,"Acute gastric ulcer without mention of hemorrhage or perforation, without mention of obstruction",Non diabetica
+532.3,"Acute duodenal ulcer without mention of hemorrhage or perforation, without mention of obstruction",Non diabetica
+703.8,Other specified diseases of nail,Non diabetica
+244.0,Postsurgical hypothyroidism,Non diabetica
+250.41,"Diabetes with renal manifestations, type I [juvenile type], not stated as uncontrolled",Diabetica
+369.22,Better eye: severe vision impairment; lesser eye: severe vision impairment,Non diabetica
+820.21,Closed fracture of intertrochanteric section of neck of femur,Non diabetica
+585.3,"Chronic kidney disease, Stage III (moderate)",Non diabetica
+574.1,"Calculus of gallbladder with other cholecystitis, without mention of obstruction",Non diabetica
+715.35,"Osteoarthrosis, localized, not specified whether primary or secondary, pelvic region and thigh",Non diabetica
+275.01,Hereditary hemochromatosis,Non diabetica
+275.1,Disorders of copper metabolism,Non diabetica
+362.5,"Macular degeneration (senile), unspecified",Non diabetica
+362.57,Drusen (degenerative),Non diabetica
+377.1,"Optic atrophy, unspecified",Non diabetica
+601.9,"Prostatitis, unspecified",Non diabetica
+722.0,Displacement of cervical intervertebral disc without myelopathy,Non diabetica
+241.1,Nontoxic multinodular goiter,Non diabetica
+389.1,"Sensorineural hearing loss, unspecified",Non diabetica
+413.9,Other and unspecified angina pectoris,Non diabetica
+704.01,Alopecia areata,Non diabetica
+309.9,Unspecified adjustment reaction,Non diabetica
+536.8,Dyspepsia and other specified disorders of function of stomach,Non diabetica
+695.1,"Erythema multiforme, unspecified",Non diabetica
+726.32,Lateral epicondylitis,Non diabetica
+462,Acute pharyngitis,Non diabetica
+592.9,"Urinary calculus, unspecified",Non diabetica
+696.1,Other psoriasis,Non diabetica
+722.2,"Displacement of intervertebral disc, site unspecified, without myelopathy",Non diabetica
+458.9,"Hypotension, unspecified",Non diabetica
+721.0,Cervical spondylosis without myelopathy,Non diabetica
+282.4,"Thalassemia, unspecified",Non diabetica
+382.9,Unspecified otitis media,Non diabetica
+682.0,Cellulitis and abscess of face,Non diabetica
+715.89,"Osteoarthrosis involving, or with mention of more than one site, but not specified as generalized, multiple sites",Non diabetica
+721.9,"Spondylosis of unspecified site, without mention of myelopathy",Non diabetica
+443.9,"Peripheral vascular disease, unspecified",Non diabetica
+716.59,"Unspecified polyarthropathy or polyarthritis, multiple sites",Non diabetica
+716.97,"Arthropathy, unspecified, ankle and foot",Non diabetica
+716.98,"Arthropathy, unspecified, other specified sites",Non diabetica
+788.0,Renal colic,Non diabetica
+302.72,Psychosexual dysfunction with inhibited sexual excitement,Non diabetica
+281.9,Unspecified deficiency anemia,Non diabetica
+715.9,"Osteoarthrosis, unspecified whether generalized or localized, site unspecified",Non diabetica
+564.1,Irritable bowel syndrome,Non diabetica
+308.0,Predominant disturbance of emotions,Non diabetica
+362.1,"Background retinopathy, unspecified",Diabetica
+362.81,Retinal hemorrhage,Diabetica
+436,"Acute, but ill-defined, cerebrovascular disease",Non diabetica
+780.4,Dizziness and giddiness,Non diabetica
+823.8,Closed fracture of unspecified part of tibia alone,Non diabetica
+845.00,"Sprain of ankle, unspecified site",Non diabetica
+211.3,Benign neoplasm of colon,Non diabetica
+415.19,Other pulmonary embolism and infarction,Non diabetica
+423.9,Unspecified disease of pericardium,Non diabetica
+714.0,Rheumatoid arthritis,Non diabetica
+716.9,"Arthropathy, unspecified, site unspecified",Non diabetica
+733.01,Senile osteoporosis,Non diabetica
+364.3,Unspecified iridocyclitis,Non diabetica
+296.00,"Bipolar I disorder, single manic episode, unspecified",Non diabetica
+358.00,Myasthenia gravis without (acute) exacerbation,Non diabetica
+365.9,Unspecified glaucoma,Non diabetica
+443.81,Peripheral angiopathy in diseases classified elsewhere,Non diabetica
+534.91,"Gastrojejunal ulcer, unspecified as acute or chronic, without mention of hemorrhage or perforation, with obstruction",Non diabetica
+272.1,Pure hyperglyceridemia,Diabetica
+698.3,Lichenification and lichen simplex chronicus,Non diabetica
+720.0,Ankylosing spondylitis,Non diabetica
+821.00,Closed fracture of unspecified part of femur,Non diabetica
+179,"Malignant neoplasm of uterus, part unspecified",Non diabetica
+183.0,Malignant neoplasm of ovary,Non diabetica
+726.0,Adhesive capsulitis of shoulder,Non diabetica
+724.2,Lumbago,Non diabetica
+V42.0,Kidney replaced by transplant,Non diabetica
+362.29,Other nondiabetic proliferative retinopathy,Diabetica
+471.9,Unspecified nasal polyp,Non diabetica
+716.94,"Arthropathy, unspecified, hand",Non diabetica
+357.4,Polyneuropathy in other diseases classified elsewhere,Diabetica
+411.1,Intermediate coronary syndrome,Non diabetica
+440.9,Generalized and unspecified atherosclerosis,Non diabetica
+825.2,Closed fracture of unspecified bone(s) of foot [except toes],Non diabetica
+98.85,Other gonococcal heart disease,Non diabetica
+V15.1,"Personal history of surgery to heart and great vessels, presenting hazards to health",Non diabetica
+V65.42,Counseling on substance use and abuse,Non diabetica
+227.3,Benign neoplasm of pituitary gland and craniopharyngeal duct,Non diabetica
+414.9,"Chronic ischemic heart disease, unspecified",Non diabetica
+637.9,"Unspecified abortion, without mention of complication, unspecified",Non diabetica
+242.2,Toxic multinodular goiter without mention of thyrotoxic crisis or storm,Non diabetica
+250.91,"Diabetes with unspecified complication, type I [juvenile type], not stated as uncontrolled",Diabetica
+401.0,Malignant essential hypertension,Non diabetica
+722.1,Displacement of lumbar intervertebral disc without myelopathy,Non diabetica
+300.9,Unspecified nonpsychotic mental disorder,Non diabetica
+825.25,Closed fracture of metatarsal bone(s),Non diabetica
+375.01,Acute dacryoadenitis,Non diabetica
+V42.4,Bone replaced by transplant,Non diabetica
+542,Other appendicitis,Non diabetica
+722.93,"Other and unspecified disc disorder, lumbar region",Non diabetica
+733.9,"Disorder of bone and cartilage, unspecified",Non diabetica
+574.2,"Calculus of gallbladder without mention of cholecystitis, without mention of obstruction",Non diabetica
+188.9,"Malignant neoplasm of bladder, part unspecified",Non diabetica
+788.41,Urinary frequency,Non diabetica
+250.81,"Diabetes with other specified manifestations, type I [juvenile type], not stated as uncontrolled",Diabetica
+369.00,"Profound impairment, both eyes, impairment level not further specified",Non diabetica
+682.5,Cellulitis and abscess of buttock,Non diabetica
+575.0,Acute cholecystitis,Non diabetica
+782.4,"Jaundice, unspecified, not of newborn",Non diabetica
+704.8,Other specified diseases of hair and hair follicles,Non diabetica
+359.1,Hereditary progressive muscular dystrophy,Non diabetica
+426.4,Right bundle branch block,Non diabetica
+427.2,"Paroxysmal tachycardia, unspecified",Non diabetica
+599.0,"Urinary tract infection, site not specified",Non diabetica
+V68.9,Encounters for unspecified administrative purpose,Non diabetica
+717.5,"Derangement of meniscus, not elsewhere classified",Non diabetica
+718.86,"Other joint derangement, not elsewhere classified, lower leg",Non diabetica
+736.42,Genu varum (acquired),Non diabetica
+805.4,Closed fracture of lumbar vertebra without mention of spinal cord injury,Non diabetica
+815.00,"Closed fracture of metacarpal bone(s), site unspecified",Non diabetica
+997.99,"Complications affecting other specified body systems, not elsewhere classified",Non diabetica
+454.9,Asymptomatic varicose veins,Non diabetica
+582.9,Chronic glomerulonephritis with unspecified pathological lesion in kidney,Non diabetica
+997.91,"Complications affecting other specified body systems, not elsewhere classified, hypertension",Non diabetica
+V08,Asymptomatic human immunodeficiency virus [HIV] infection status,Non diabetica
+886.1,"Traumatic amputation of other finger(s) (complete) (partial), complicated",Non diabetica
+627.2,Symptomatic menopausal or female climacteric states,Non diabetica
+727.03,Trigger finger (acquired),Non diabetica
+V43.1,Lens replaced by other means,Non diabetica
+724.02,"Spinal stenosis, lumbar region, without neurogenic claudication",Non diabetica
+367.21,Regular astigmatism,Non diabetica
+726.73,Calcaneal spur,Non diabetica
+402.01,Malignant hypertensive heart disease with heart failure,Non diabetica
+729.4,"Fasciitis, unspecified",Non diabetica
+753.1,"Cystic kidney disease, unspecified",Non diabetica
+782.3,Edema,Non diabetica
+217,Benign neoplasm of breast,Non diabetica
+216.9,"Benign neoplasm of skin, site unspecified",Non diabetica
+427.6,"Premature beats, unspecified",Non diabetica
+427.69,Other premature beats,Non diabetica
+626.6,Metrorrhagia,Non diabetica
+593.2,"Cyst of kidney, acquired",Non diabetica
+842.13,Sprain of interphalangeal (joint) of hand,Non diabetica
+V45.3,Intestinal bypass or anastomosis status,Non diabetica
+552.00,"Femoral hernia with obstruction, unilateral or unspecified (not specified as recurrent)",Non diabetica
+455.0,Internal hemorrhoids without mention of complication,Non diabetica
+569.3,Hemorrhage of rectum and anus,Non diabetica
+577.2,Cyst and pseudocyst of pancreas,Non diabetica
+719.4,"Pain in joint, site unspecified",Non diabetica
+723.5,"Torticollis, unspecified",Non diabetica
+345.9,"Epilepsy, unspecified, without mention of intractable epilepsy",Non diabetica
+375.15,"Tear film insufficiency, unspecified",Non diabetica
+463,Acute tonsillitis,Non diabetica
+577.9,Unspecified disease of pancreas,Non diabetica
+365.00,"Preglaucoma, unspecified",Non diabetica
+345.11,"Generalized convulsive epilepsy, with intractable epilepsy",Non diabetica
+365.1,"Open-angle glaucoma, unspecified",Non diabetica
+38.9,Unspecified septicemia,Non diabetica
+694.5,Pemphigoid,Non diabetica
+717.7,Chondromalacia of patella,Non diabetica
+11.9,"Pulmonary tuberculosis, unspecified, unspecified",Non diabetica
+379.23,Vitreous hemorrhage,Non diabetica
+155.0,"Malignant neoplasm of liver, primary",Non diabetica
+211.1,Benign neoplasm of stomach,Non diabetica
+287.5,"Thrombocytopenia, unspecified",Non diabetica
+571.0,Alcoholic fatty liver,Non diabetica
+571.2,Alcoholic cirrhosis of liver,Non diabetica
+571.5,Cirrhosis of liver without mention of alcohol,Non diabetica
+573.8,Other specified disorders of liver,Non diabetica
+576.8,Other specified disorders of biliary tract,Non diabetica
+694.4,Pemphigus,Non diabetica
+275.4,Unspecified disorder of calcium metabolism,Non diabetica
+427.31,Atrial fibrillation,Non diabetica
+437.9,Unspecified cerebrovascular disease,Non diabetica
+585.1,"Chronic kidney disease, Stage I",Non diabetica
+702.0,Actinic keratosis,Non diabetica
+791.0,Proteinuria,Non diabetica
+250.53,"Diabetes with ophthalmic manifestations, type I [juvenile type], uncontrolled",Diabetica
+710.2,Sicca syndrome,Non diabetica
+714.2,Other rheumatoid arthritis with visceral or systemic involvement,Non diabetica
+714.3,"Polyarticular juvenile rheumatoid arthritis, chronic or unspecified",Non diabetica
+425.4,Other primary cardiomyopathies,Non diabetica
+455.6,Unspecified hemorrhoids without mention of complication,Non diabetica
+241.9,Unspecified nontoxic nodular goiter,Non diabetica
+285.29,Anemia of other chronic disease,Non diabetica
+361.81,Traction detachment of retina,Non diabetica
+362.02,Proliferative diabetic retinopathy,Diabetica
+366.41,Diabetic cataract,Diabetica
+369.7,"Moderate or severe impairment, one eye, impairment level not further specified",Non diabetica
+374.05,Trichiasis of eyelid without entropion,Non diabetica
+536.3,Gastroparesis,Non diabetica
+V45.51,Presence of intrauterine contraceptive device,Non diabetica
+340,Multiple sclerosis,Non diabetica
+754.71,Talipes cavus,Non diabetica
+112.9,Candidiasis of unspecified site,Non diabetica
+394.0,Mitral stenosis,Non diabetica
+423.2,Constrictive pericarditis,Non diabetica
+427.32,Atrial flutter,Non diabetica
+535.5,"Unspecified gastritis and gastroduodenitis, without mention of hemorrhage",Non diabetica
+245.0,Acute thyroiditis,Non diabetica
+255.4,Corticoadrenal insufficiency,Non diabetica
+411.89,"Other acute and subacute forms of ischemic heart disease, other",Non diabetica
+829.0,"Fracture of unspecified bone, closed",Non diabetica
+618.9,Unspecified genital prolapse,Non diabetica
+162.3,"Malignant neoplasm of upper lobe, bronchus or lung",Non diabetica
+440.8,Atherosclerosis of other specified arteries,Non diabetica
+362.83,Retinal edema,Diabetica
+367.1,Myopia,Non diabetica
+367.2,"Astigmatism, unspecified",Non diabetica
+789.2,Splenomegaly,Non diabetica
+994.1,Drowning and nonfatal submersion,Non diabetica
+127.4,Enterobiasis,Non diabetica
+491.9,Unspecified chronic bronchitis,Non diabetica
+367.0,Hypermetropia,Non diabetica
+643.03,"Mild hyperemesis gravidarum, antepartum condition or complication",Non diabetica
+729.1,"Myalgia and myositis, unspecified",Non diabetica
+253.4,Other anterior pituitary disorders,Non diabetica
+386.9,Unspecified vertiginous syndromes and labyrinthine disorders,Non diabetica
+153.9,"Malignant neoplasm of colon, unspecified site",Non diabetica
+208.9,"Unspecified leukemia, without mention of having achieved remission",Non diabetica
+311,"Depressive disorder, not elsewhere classified",Non diabetica
+357.0,Acute infective polyneuritis,Non diabetica
+258.8,Other specified polyglandular dysfunction,Non diabetica
+715.96,"Osteoarthrosis, unspecified whether generalized or localized, lower leg",Non diabetica
+244.3,Other iatrogenic hypothyroidism,Non diabetica
+360.21,Progressive high (degenerative) myopia,Non diabetica
+564.00,"Constipation, unspecified",Non diabetica
+758.0,Down's syndrome,Non diabetica
+251.0,Hypoglycemic coma,Diabetica
+384.2,"Perforation of tympanic membrane, unspecified",Non diabetica
+171.9,"Malignant neoplasm of connective and other soft tissue, site unspecified",Non diabetica
+359.29,Other specified myotonic disorder,Non diabetica
+785.2,Undiagnosed cardiac murmurs,Non diabetica
+402.00,Malignant hypertensive heart disease without heart failure,Non diabetica
+814.00,"Closed fracture of carpal bone, unspecified",Non diabetica
+362.07,Diabetic macular edema,Diabetica
+366.2,"Traumatic cataract, unspecified",Non diabetica
+378.54,Sixth or abducens nerve palsy,Non diabetica
+790.5,Other nonspecific abnormal serum enzyme levels,Non diabetica
+787.1,Heartburn,Non diabetica
+258.1,Other combinations of endocrine dysfunction,Non diabetica
+338.29,Other chronic pain,Non diabetica
+715.94,"Osteoarthrosis, unspecified whether generalized or localized, hand",Non diabetica
+723.1,Cervicalgia,Non diabetica
+729.2,"Neuralgia, neuritis, and radiculitis, unspecified",Non diabetica
+250.1,"Diabetes with ketoacidosis, type II or unspecified type, not stated as uncontrolled",Diabetica
+718.65,"Unspecified intrapelvic protrusion of acetabulum, pelvic region and thigh",Non diabetica
+493.91,"Asthma, unspecified type, with status asthmaticus",Non diabetica
+748.3,"Other anomalies of larynx, trachea, and bronchus",Non diabetica
+540.0,Acute appendicitis with generalized peritonitis,Non diabetica
+567.9,Unspecified peritonitis,Non diabetica
+685.1,Pilonidal cyst without mention of abscess,Non diabetica
+366.12,Incipient senile cataract,Non diabetica
+117.9,Other and unspecified mycoses,Non diabetica
+460,Acute nasopharyngitis [common cold],Non diabetica
+466.0,Acute bronchitis,Non diabetica
+728.85,Spasm of muscle,Non diabetica
+V22.2,"Pregnant state, incidental",Non diabetica
+590.1,Acute pyelonephritis without lesion of renal medullary necrosis,Non diabetica
+690.1,"Seborrheic dermatitis, unspecified",Non diabetica
+696.5,Other and unspecified pityriasis,Non diabetica
+361.9,Unspecified retinal detachment,Diabetica
+V45.6,States following surgery of eye and adnexa,Non diabetica
+541,"Appendicitis, unqualified",Non diabetica
+377.39,Other optic neuritis,Non diabetica
+365.11,Primary open angle glaucoma,Non diabetica
+429.0,"Myocarditis, unspecified",Non diabetica
+735.0,Hallux valgus (acquired),Non diabetica
+737.8,Other curvatures of spine,Non diabetica
+434.11,Cerebral embolism with cerebral infarction,Non diabetica
+780.39,Other convulsions,Non diabetica
+380.4,Impacted cerumen,Non diabetica
+695.3,Rosacea,Non diabetica
+706.1,Other acne,Non diabetica
+727.04,Radial styloid tenosynovitis,Non diabetica
+193,Malignant neoplasm of thyroid gland,Non diabetica
+242.91,"Thyrotoxicosis without mention of goiter or other cause, with mention of thyrotoxic crisis or storm",Non diabetica
+610.1,Diffuse cystic mastopathy,Non diabetica
+691.8,Other atopic dermatitis and related conditions,Non diabetica
+647.13,"Gonorrhea of mother, complicating pregnancy, childbirth, or the puerperium, antepartum condition or complication",Non diabetica
+259.1,"Precocious sexual development and puberty, not elsewhere classified",Non diabetica
+260,Kwashiorkor,Non diabetica
+756.16,Klippel-Feil syndrome,Non diabetica
+V16.0,Family history of malignant neoplasm of gastrointestinal tract,Non diabetica
+250.11,"Diabetes with ketoacidosis, type I [juvenile type], not stated as uncontrolled",Diabetica
+578.9,"Hemorrhage of gastrointestinal tract, unspecified",Non diabetica
+249.91,"Secondary diabetes mellitus with unspecified complication, uncontrolled",Diabetica
+277.4,Disorders of bilirubin excretion,Non diabetica
+277.00,Cystic fibrosis without mention of meconium ileus,Non diabetica
+610.0,Solitary cyst of breast,Non diabetica
+381.19,Other chronic serous otitis media,Non diabetica
+474.00,Chronic tonsillitis,Non diabetica
+812.41,Closed supracondylar fracture of humerus,Non diabetica
+816.00,"Closed fracture of phalanx or phalanges of hand, unspecified",Non diabetica
+245.2,Chronic lymphocytic thyroiditis,Non diabetica
+278.02,Overweight,Non diabetica
+465.8,Acute upper respiratory infections of other multiple sites,Non diabetica
+255.0,Cushing's syndrome,Non diabetica
+285.8,Other specified anemias,Non diabetica
+480.3,Pneumonia due to SARS-associated coronavirus,Non diabetica
+584.9,"Acute kidney failure, unspecified",Non diabetica
+785.52,Septic shock,Non diabetica
+790.7,Bacteremia,Non diabetica
+730.2,"Unspecified osteomyelitis, site unspecified",Non diabetica
+174.9,"Malignant neoplasm of breast (female), unspecified",Non diabetica
+327.24,Idiopathic sleep related non-obstructive alveolar hypoventilation,Non diabetica
+445.02,Atheroembolism of lower extremity,Non diabetica
+368.2,Diplopia,Non diabetica
+478.0,Hypertrophy of nasal turbinates,Non diabetica
+616.1,"Vaginitis and vulvovaginitis, unspecified",Non diabetica
+252.1,Hypoparathyroidism,Non diabetica
+571.9,Unspecified chronic liver disease without mention of alcohol,Non diabetica
+70.51,Acute hepatitis C without mention of hepatic coma,Non diabetica
+720.1,Spinal enthesopathy,Non diabetica
+252.00,"Hyperparathyroidism, unspecified",Non diabetica
+410.1,"Acute myocardial infarction of other anterior wall, episode of care unspecified",Non diabetica
+189.0,"Malignant neoplasm of kidney, except pelvis",Non diabetica
+239.5,Neoplasm of unspecified nature of other genitourinary organs,Non diabetica
+470,Deviated nasal septum,Non diabetica
+593.89,Other specified disorders of kidney and ureter,Non diabetica
+686.1,Pyogenic granuloma of skin and subcutaneous tissue,Non diabetica
+708.9,"Urticaria, unspecified",Non diabetica
+E873.9,Unspecified failure in dosage,Non diabetica
+250.93,"Diabetes with unspecified complication, type I [juvenile type], uncontrolled",Diabetica
+412,Old myocardial infarction,Non diabetica
+281.0,Pernicious anemia,Non diabetica
+476.0,Chronic laryngitis,Non diabetica
+478.6,Edema of larynx,Non diabetica
+805.8,Closed fracture of unspecified vertebral column without mention of spinal cord injury,Non diabetica
+572.3,Portal hypertension,Non diabetica
+V42.7,Liver replaced by transplant,Non diabetica
+719.65,"Other symptoms referable to joint, pelvic region and thigh",Non diabetica
+805.2,Closed fracture of dorsal [thoracic] vertebra without mention of spinal cord injury,Non diabetica
+641.13,"Hemorrhage from placenta previa, antepartum condition or complication",Non diabetica
+253.1,Other and unspecified anterior pituitary hyperfunction,Non diabetica
+V72.85,Other specified examination,Non diabetica
+611.1,Hypertrophy of breast,Non diabetica
+V65.40,Counseling NOS,Non diabetica
+331.9,"Cerebral degeneration, unspecified",Non diabetica
+38.3,Septicemia due to anaerobes,Non diabetica
+596.54,Neurogenic bladder NOS,Non diabetica
+781.3,Lack of coordination,Non diabetica
+710.0,Systemic lupus erythematosus,Non diabetica
+741.9,"Spina bifida without mention of hydrocephalus, unspecified region",Non diabetica
+52.9,Varicella without mention of complication,Non diabetica
+373.00,"Blepharitis, unspecified",Non diabetica
+V43.3,Heart valve replaced by other means,Non diabetica
+272.8,Other disorders of lipoid metabolism,Non diabetica
+852.4,"Extradural hemorrhage following injury without mention of open intracranial wound, unspecified state of consciousness",Non diabetica
+V71.9,Observation for unspecified suspected condition,Non diabetica
+780.8,Generalized hyperhidrosis,Non diabetica
+611.72,Lump or mass in breast,Non diabetica
+727.3,Other bursitis,Non diabetica
+75,Infectious mononucleosis,Non diabetica
+348.31,Metabolic encephalopathy,Non diabetica
+718.00,"Articular cartilage disorder, site unspecified",Non diabetica
+854.15,"Intracranial injury of other and unspecified nature with open intracranial wound, with prolonged [more than 24 hours] loss of consciousness without return to pre-existing conscious level",Non diabetica
+98.36,"Gonococcal endometritis, chronic",Non diabetica
+455.3,External hemorrhoids without mention of complication,Non diabetica
+493.01,Extrinsic asthma with status asthmaticus,Non diabetica
+V25.43,Surveillance of implantable subdermal contraceptive,Non diabetica
+486,"Pneumonia, organism unspecified",Non diabetica
+372.3,"Conjunctivitis, unspecified",Non diabetica
+V15.01,Allergy to peanuts,Non diabetica
+427.89,Other specified cardiac dysrhythmias,Non diabetica
+782.0,Disturbance of skin sensation,Non diabetica
+172.9,"Melanoma of skin, site unspecified",Non diabetica
+722.73,"Intervertebral disc disorder with myelopathy, lumbar region",Non diabetica
+53.9,Herpes zoster without mention of complication,Non diabetica
+245.9,"Thyroiditis, unspecified",Non diabetica
+519.8,"Other diseases of respiratory system, not elsewhere classified",Non diabetica
+250.63,"Diabetes with neurological manifestations, type I [juvenile type], uncontrolled",Diabetica
+241.0,Nontoxic uninodular goiter,Non diabetica
+737.2,Lordosis (acquired) (postural),Non diabetica
+807.09,"Closed fracture of multiple ribs, unspecified",Non diabetica
+180.9,"Malignant neoplasm of cervix uteri, unspecified site",Non diabetica
+V72.0,Examination of eyes and vision,Non diabetica
+736.73,"Cavus deformity of foot, acquired",Non diabetica
+447.6,"Arteritis, unspecified",Non diabetica
+362.53,Cystoid macular degeneration,Non diabetica
+288.3,Eosinophilia,Non diabetica
+474.12,Hypertrophy of adenoids alone,Non diabetica
+350.1,Trigeminal neuralgia,Non diabetica
+530.1,"Esophagitis, unspecified",Non diabetica
+727.06,Tenosynovitis of foot and ankle,Non diabetica
+715.09,"Osteoarthrosis, generalized, multiple sites",Non diabetica
+V70.5,Health examination of defined subpopulations,Non diabetica
+334.0,Friedreich's ataxia,Non diabetica
+78.19,Other specified viral warts,Non diabetica
+537.9,Unspecified disorder of stomach and duodenum,Non diabetica
+276.2,Acidosis,Non diabetica
+052.0,Postvaricella encephalitis,Non diabetica
+249.01,"Secondary diabetes mellitus without mention of complication, uncontrolled",Diabetica
+250.13,"Diabetes with ketoacidosis, type I [juvenile type], uncontrolled",Diabetica
+323.61,Infectious acute disseminated encephalomyelitis (ADEM),Non diabetica
+605,Redundant prepuce and phimosis,Non diabetica
+V25.9,Unspecified contraceptive management,Non diabetica
+214.9,"Lipoma, unspecified site",Non diabetica
+54.9,Herpes simplex without mention of complication,Non diabetica
+566,Abscess of anal and rectal regions,Non diabetica
+847.0,Sprain of neck,Non diabetica
+213.9,"Benign neoplasm of bone and articular cartilage, site unspecified",Non diabetica
+V62.82,"Bereavement, uncomplicated",Non diabetica
+736.79,Other acquired deformities of ankle and foot,Non diabetica
+995.3,"Allergy, unspecified, not elsewhere classified",Non diabetica
+V68.2,Request for expert evidence,Non diabetica
+591,Hydronephrosis,Non diabetica
+708.5,Cholinergic urticaria,Non diabetica
+240.9,"Goiter, unspecified",Non diabetica
+V14.0,Personal history of allergy to penicillin,Non diabetica
+695.2,Erythema nodosum,Non diabetica
+372.4,"Pterygium, unspecified",Non diabetica
+702.19,Other seborrheic keratosis,Non diabetica
+576.1,Cholangitis,Non diabetica
+691.0,Diaper or napkin rash,Non diabetica
+54.1,"Genital herpes, unspecified",Non diabetica
+742.9,"Unspecified congenital anomaly of brain, spinal cord, and nervous system",Non diabetica
+758.6,Gonadal dysgenesis,Non diabetica
+794.5,Nonspecific abnormal results of function study of thyroid,Non diabetica
+831.00,"Closed dislocation of shoulder, unspecified",Non diabetica
+727.00,"Synovitis and tenosynovitis, unspecified",Non diabetica
+V72.32,Encounter for Papanicolaou cervical smear to confirm findings of recent normal smear following initial abnormal smear,Non diabetica
+300.14,Dissociative identity disorder,Non diabetica
+370.21,Punctate keratitis,Non diabetica
+371.03,Central opacity of cornea,Non diabetica
+733.42,Aseptic necrosis of head and neck of femur,Non diabetica
+473.9,Unspecified sinusitis (chronic),Non diabetica
+553.21,Incisional hernia without mention of obstruction or gangrene,Non diabetica
+781.0,Abnormal involuntary movements,Non diabetica
+716.91,"Arthropathy, unspecified, shoulder region",Non diabetica
+716.95,"Arthropathy, unspecified, pelvic region and thigh",Non diabetica
+97.9,"Syphilis, unspecified",Non diabetica
+240.0,"Goiter, specified as simple",Non diabetica
+357.2,Polyneuropathy in diabetes,Diabetica
+733.09,Other osteoporosis,Non diabetica
+754.0,"Congenital musculoskeletal deformities of skull, face, and jaw",Non diabetica
+485,"Bronchopneumonia, organism unspecified",Non diabetica
+337.2,"Reflex sympathetic dystrophy, unspecified",Non diabetica
+397.0,Diseases of tricuspid valve,Non diabetica
+427.61,Supraventricular premature beats,Non diabetica
+394.9,Other and unspecified mitral valve diseases,Non diabetica
+794.31,Nonspecific abnormal electrocardiogram [ECG] [EKG],Non diabetica
+642.41,"Mild or unspecified pre-eclampsia, delivered, with or without mention of antepartum condition",Non diabetica
+V43.64,Hip joint replacement,Non diabetica
+721.3,Lumbosacral spondylosis without myelopathy,Non diabetica
+724.9,Other unspecified back disorders,Non diabetica
+726.11,Calcifying tendinitis of shoulder,Non diabetica
+228.00,Hemangioma of unspecified site,Non diabetica
+920,"Contusion of face, scalp, and neck except eye(s)",Non diabetica
